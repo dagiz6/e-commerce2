@@ -1,8 +1,6 @@
 "use client";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://e-commerce-backend-lali735628-ghb3g0u6.leapcell.dev/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export interface SignInData {
   email: string;
