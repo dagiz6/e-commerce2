@@ -60,7 +60,7 @@ export const AuthPage: React.FC = () => {
           </div>
           <div className="relative overflow-hidden rounded-2xl shadow-2xl">
             <img
-              src="https://images.pexels.com/photos/1234650/pexels-photo-1234650.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://images.pexels.com/photos/4968391/pexels-photo-4968391.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Fashion shopping"
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             />
@@ -75,7 +75,7 @@ export const AuthPage: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
           </div>
         </div>
-        
+
         {/* Overlay content */}
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <div className="text-center text-white px-8">
@@ -91,9 +91,7 @@ export const AuthPage: React.FC = () => {
 
       {/* Right side - Form */}
       <div className="flex-1 lg:flex-none lg:w-[600px] flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          {renderForm()}
-        </div>
+        <div className="w-full max-w-md">{renderForm()}</div>
       </div>
     </div>
   );

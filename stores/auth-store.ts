@@ -1,7 +1,7 @@
 "use client";
 
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
 export interface User {
   id: string;
@@ -15,7 +15,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
@@ -32,27 +32,29 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: false,
         isLoading: false,
         error: null,
-        
-        setUser: (user) => set({ 
-          user, 
-          isAuthenticated: !!user,
-          error: null 
-        }),
-        
+
+        setUser: (user) =>
+          set({
+            user,
+            isAuthenticated: !!user,
+            error: null,
+          }),
+
         setLoading: (isLoading) => set({ isLoading }),
-        
+
         setError: (error) => set({ error, isLoading: false }),
-        
-        logout: () => set({ 
-          user: null, 
-          isAuthenticated: false, 
-          error: null 
-        }),
-        
+
+        logout: () =>
+          set({
+            user: null,
+            isAuthenticated: false,
+            error: null,
+          }),
+
         clearError: () => set({ error: null }),
       }),
       {
-        name: 'auth-storage',
+        name: "auth-storage",
         partialize: (state) => ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,

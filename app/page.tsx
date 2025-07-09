@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect } from 'react';
-import { AuthPage } from '@/components/auth/auth-page';
-import { useAuthStore } from '@/stores/auth-store';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, ShoppingBag, LogOut } from 'lucide-react';
+import { useEffect } from "react";
+import { AuthPage } from "@/components/auth/auth-page";
+import { useAuthStore } from "@/stores/auth-store";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { User, ShoppingBag, LogOut } from "lucide-react";
 
 export default function Home() {
   const { isAuthenticated, user, setUser } = useAuthStore();
 
   useEffect(() => {
     // Check if user is already authenticated on page load
-    const token = localStorage.getItem('auth-token');
+    const token = localStorage.getItem("auth-token");
     if (token && !isAuthenticated) {
       // In a real app, you would validate the token with your backend
       // For demo purposes, we'll just show the auth page
@@ -20,7 +26,7 @@ export default function Home() {
   }, [isAuthenticated]);
 
   const handleLogout = () => {
-    localStorage.removeItem('auth-token');
+    localStorage.removeItem("auth-token");
     useAuthStore.getState().logout();
   };
 
@@ -47,11 +53,13 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Ready to Shop?</p>
-                  <p className="text-sm text-gray-600">Explore our amazing products</p>
+                  <p className="text-sm text-gray-600">
+                    Explore our amazing products
+                  </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
                 <strong>Email:</strong> {user.email}
