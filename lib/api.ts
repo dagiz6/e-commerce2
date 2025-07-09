@@ -63,21 +63,21 @@ class ApiClient {
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/auth/sign-in', {
+    return this.request<AuthResponse>('/sign-in', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/auth/sign-up', {
+    return this.request<AuthResponse>('/sign-up', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/auth/forgetPassword', {
+    return this.request<{ message: string }>('/forgetPassword', {
       method: 'POST',
       body: JSON.stringify(data),
     });
