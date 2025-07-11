@@ -38,7 +38,7 @@ function ResetPasswordContent() {
     }
 
     // Validate token format (basic check)
-    if (tokenFromUrl.length < 10) {
+    if (tokenFromUrl.length < 4) {
       setIsValidToken(false);
       return;
     }
