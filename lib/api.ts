@@ -97,7 +97,7 @@ class ApiClient {
   }
 
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/auth/forgot-password', {
+    return this.request<{ message: string }>('/auth/forgotPassword', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -111,7 +111,7 @@ class ApiClient {
       otpLength: data.otp?.length,
     });
     
-    return this.request<{ message: string }>('/auth/reset-password', {
+    return this.request<{ message: string }>('/auth/resetPassword', {
       method: 'POST',
       body: JSON.stringify(data),
     });
