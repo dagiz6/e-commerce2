@@ -45,7 +45,7 @@ function ForgotPasswordContent() {
           </div>
           <div className="relative overflow-hidden rounded-2xl shadow-2xl">
             <img
-              src="https://images.pexels.com/photos/1234650/pexels-photo-1234650.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://images.pexels.com/photos/4968391/pexels-photo-4968391.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Fashion shopping"
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             />
