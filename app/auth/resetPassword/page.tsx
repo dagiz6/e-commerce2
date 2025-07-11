@@ -56,7 +56,7 @@ function ResetPasswordContent() {
       confirmPassword: formData.confirmPassword ? "present" : "missing",
       otp: formData.otp ? "present" : "missing",
       passwordLength: formData.password?.length,
-      otpLength: formData.otp?.length,
+      otpValue: formData.otp,
     });
 
     // Validate password confirmation on frontend
@@ -82,8 +82,9 @@ function ResetPasswordContent() {
 
     // Send only OTP and password to backend
     resetPassword({
-      otp: formData.otp,
+      otp: parseInt(formData.otp, 10), // Convert OTP to number
       password: formData.password,
+      token: parseInt(token as string, 10), // Convert token to number
     });
   };
 
