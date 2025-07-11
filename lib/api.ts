@@ -97,7 +97,7 @@ class ApiClient {
   }
 
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/auth/forgotPassword', {
+    return this.request<{ message: string }>('/auth/forgetPassword', {
       method: 'POST',
       body: JSON.stringify(data),
     });
