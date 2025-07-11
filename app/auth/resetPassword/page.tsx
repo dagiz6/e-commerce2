@@ -21,6 +21,7 @@ function ResetPasswordContent() {
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
+    otp: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,6 +50,16 @@ function ResetPasswordContent() {
     e.preventDefault();
     setError(null);
 
+    // Frontend validation
+    console.log("Form submission data:", {
+      password: formData.password ? "present" : "missing",
+      confirmPassword: formData.confirmPassword ? "present" : "missing",
+      otp: formData.otp ? "present" : "missing",
+      passwordLength: formData.password?.length,
+      otpLength: formData.otp?.length,
+    });
+
+    // Validate password confirmation on frontend
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -59,15 +70,20 @@ function ResetPasswordContent() {
       return;
     }
 
-    if (!token) {
-      setError("Invalid reset token");
+    if (!formData.otp) {
+      setError("Please enter the OTP code");
       return;
     }
 
+    if (formData.otp.length < 4) {
+      setError("Please enter a valid OTP code");
+      return;
+    }
+
+    // Send only OTP and password to backend
     resetPassword({
-      token,
+      otp: formData.otp,
       password: formData.password,
-      confirmPassword: formData.confirmPassword,
     });
   };
 
@@ -204,6 +220,28 @@ function ResetPasswordContent() {
 
                 <div className="space-y-2">
                   <Label
+                    htmlFor="otp"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    OTP Code
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      placeholder="Enter the OTP code from your email"
+                      value={formData.otp}
+                      onChange={handleChange}
+                      required
+                      className="pl-10 h-11 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
                     htmlFor="password"
                     className="text-sm font-medium text-gray-700"
                   >
@@ -275,6 +313,7 @@ function ResetPasswordContent() {
                 <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
                   <p className="font-medium mb-1">Password requirements:</p>
                   <ul className="list-disc list-inside space-y-1">
+                    <li>Enter the OTP code from your email</li>
                     <li>At least 6 characters long</li>
                     <li>Must match the confirmation password</li>
                   </ul>
@@ -285,7 +324,8 @@ function ResetPasswordContent() {
                   disabled={
                     isResettingPassword ||
                     !formData.password ||
-                    !formData.confirmPassword
+                    !formData.confirmPassword ||
+                    !formData.otp
                   }
                   className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
                 >
