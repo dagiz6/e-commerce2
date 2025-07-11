@@ -83,7 +83,7 @@ function ResetPasswordContent() {
     // Send only OTP and password to backend
     resetPassword({
       otp: parseInt(formData.otp, 10), // Convert OTP to number
-      password: formData.password,
+      newPassword: formData.password,
     });
   };
 

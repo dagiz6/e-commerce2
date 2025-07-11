@@ -21,7 +21,7 @@ export interface ForgotPasswordData {
 
 export interface ResetPasswordData {
   otp: number;
-  password: string;
+  newPassword: string;
 }
 
 export interface AuthResponse {
@@ -108,7 +108,7 @@ class ApiClient {
     // Log what's being sent to backend
     console.log("Reset password request data:", {
       otp: data.otp ? "present" : "missing",
-      password: data.password ? "present" : "missing",
+      password: data.newPassword ? "present" : "missing",
       otpValue: data.otp,
     });
 
