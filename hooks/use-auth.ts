@@ -87,8 +87,11 @@ export const useAuth = () => {
     onSuccess: (response) => {
       setLoading(false);
       toast.success(response.message);
-      // Redirect to sign-in page after successful password reset
-      router.push("/auth/sign-in?reset=success");
+      // The backend will generate a new token and redirect URL
+      // For now, redirect to sign-in with success message
+      setTimeout(() => {
+        router.push("/auth/sign-in?reset=success");
+      }, 2000); // Give user time to see success message
     },
     onError: (error: Error) => {
       setError(error.message);

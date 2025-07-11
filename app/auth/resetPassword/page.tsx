@@ -38,7 +38,7 @@ function ResetPasswordContent() {
     }
 
     // Validate token format (basic check)
-    if (tokenFromUrl.length < 4) {
+    if (tokenFromUrl.length < 10) {
       setIsValidToken(false);
       return;
     }
@@ -84,7 +84,6 @@ function ResetPasswordContent() {
     resetPassword({
       otp: parseInt(formData.otp, 10), // Convert OTP to number
       password: formData.password,
-      token: parseInt(token as string, 10), // Convert token to number
     });
   };
 
