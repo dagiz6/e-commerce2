@@ -8,6 +8,7 @@ import {
   SignInData,
   SignUpData,
   ForgotPasswordData,
+  ResetPasswordData,
 } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -77,6 +78,24 @@ export const useAuth = () => {
     },
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: ResetPasswordData) => apiClient.resetPassword(data),
+    onMutate: () => {
+      setLoading(true);
+      clearError();
+    },
+    onSuccess: (response) => {
+      setLoading(false);
+      toast.success(response.message);
+      // Redirect to sign-in page after successful password reset
+      router.push("/auth/sign-in?reset=success");
+    },
+    onError: (error: Error) => {
+      setError(error.message);
+      toast.error(error.message);
+    },
+  });
+
   const handleLogout = () => {
     logout();
     localStorage.removeItem("auth-token");
@@ -88,10 +107,17 @@ export const useAuth = () => {
     signIn: signInMutation.mutate,
     signUp: signUpMutation.mutate,
     forgotPassword: forgotPasswordMutation.mutate,
+    resetPassword: resetPasswordMutation.mutate,
     logout: handleLogout,
     isLoading:
       signInMutation.isPending ||
       signUpMutation.isPending ||
-      forgotPasswordMutation.isPending,
+      forgotPasswordMutation.isPending ||
+      resetPasswordMutation.isPending,
+    // Individual loading states for better UX
+    isSigningIn: signInMutation.isPending,
+    isSigningUp: signUpMutation.isPending,
+    isSendingResetEmail: forgotPasswordMutation.isPending,
+    isResettingPassword: resetPasswordMutation.isPending,
   };
 };

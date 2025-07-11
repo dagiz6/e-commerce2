@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
 
@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
           </div>
           <div className="relative overflow-hidden rounded-2xl shadow-2xl">
             <img
-              src="https://images.pexels.com/photos/4968391/pexels-photo-4968391.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://images.pexels.com/photos/1234650/pexels-photo-1234650.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Fashion shopping"
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             />
@@ -83,5 +83,22 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="text-gray-600 mt-2">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }

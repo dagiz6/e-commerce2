@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, CheckCircle } from "lucide-react";
 
 interface SignInFormProps {
   onSwitchToSignUp: () => void;
@@ -47,6 +47,10 @@ export const SignInForm: React.FC<SignInFormProps> = ({
   return (
     <Card className="w-full max-w-md mx-auto border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
       <CardHeader className="space-y-1 pb-6">
+        <Suspense fallback={null}>
+          <ResetSuccessMessage />
+        </Suspense>
+
         <CardTitle className="text-2xl font-bold text-center text-gray-900">
           Welcome Back
         </CardTitle>
@@ -152,3 +156,21 @@ export const SignInForm: React.FC<SignInFormProps> = ({
     </Card>
   );
 };
+
+function ResetSuccessMessage() {
+  const searchParams = useSearchParams();
+  const resetSuccess = searchParams.get("reset") === "success";
+
+  if (!resetSuccess) return null;
+
+  return (
+    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+      <div className="flex items-center">
+        <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+        <span className="text-sm text-green-700">
+          Password reset successful! You can now sign in with your new password.
+        </span>
+      </div>
+    </div>
+  );
+}
