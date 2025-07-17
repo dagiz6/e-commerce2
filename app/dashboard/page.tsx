@@ -26,21 +26,34 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // If user is not authenticated, redirect to sign-in
-    if (!isAuthenticated) {
-      router.push("/auth/sign-in");
+    // Check both authentication state and token
+    const token = localStorage.getItem("auth-token");
+    
+    if (!isAuthenticated || !user || !token) {
+      // Clear any stale data
+      localStorage.removeItem("auth-token");
+      logout();
+      router.replace("/auth/sign-in");
+      return;
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router, logout]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth-token");
     logout();
-    router.push("/auth/sign-in");
+    router.replace("/auth/sign-in");
   };
 
-  // Don't render dashboard if user is not authenticated (prevents flash)
+  // Show loading state while checking authentication
   if (!isAuthenticated || !user) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="text-gray-600 mt-2">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

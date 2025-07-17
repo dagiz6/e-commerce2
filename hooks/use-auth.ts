@@ -23,15 +23,19 @@ export const useAuth = () => {
       clearError();
     },
     onSuccess: (response) => {
+      // Store token in localStorage FIRST
+      localStorage.setItem("auth-token", response.token);
+      
+      // Then set user state
       setUser(response.user);
       setLoading(false);
       toast.success("Successfully signed in!");
 
-      // Store token in localStorage
-      localStorage.setItem("auth-token", response.token);
-
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Use replace instead of push to prevent back navigation issues
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        router.replace("/dashboard");
+      }, 100);
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -46,15 +50,19 @@ export const useAuth = () => {
       clearError();
     },
     onSuccess: (response) => {
+      // Store token in localStorage FIRST
+      localStorage.setItem("auth-token", response.token);
+      
+      // Then set user state
       setUser(response.user);
       setLoading(false);
       toast.success("Account created successfully!");
 
-      // Store token in localStorage
-      localStorage.setItem("auth-token", response.token);
-
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Use replace instead of push to prevent back navigation issues
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        router.replace("/dashboard");
+      }, 100);
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -90,7 +98,7 @@ export const useAuth = () => {
       // The backend will generate a new token and redirect URL
       // For now, redirect to sign-in with success message
       setTimeout(() => {
-        router.push("/auth/sign-in?reset=success");
+        router.replace("/auth/sign-in?reset=success");
       }, 2000); // Give user time to see success message
     },
     onError: (error: Error) => {
@@ -102,7 +110,7 @@ export const useAuth = () => {
   const handleLogout = () => {
     logout();
     localStorage.removeItem("auth-token");
-    router.push("/auth/sign-in");
+    router.replace("/auth/sign-in");
     toast.success("Logged out successfully");
   };
 

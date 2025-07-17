@@ -22,6 +22,7 @@ interface AuthState {
   setError: (error: string | null) => void;
   logout: () => void;
   clearError: () => void;
+  initializeAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -38,6 +39,7 @@ export const useAuthStore = create<AuthState>()(
             user,
             isAuthenticated: !!user,
             error: null,
+            isLoading: false,
           }),
 
         setLoading: (isLoading) => set({ isLoading }),
@@ -49,9 +51,26 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false,
             error: null,
+            isLoading: false,
           }),
 
         clearError: () => set({ error: null }),
+
+        initializeAuth: () => {
+          const token = localStorage.getItem("auth-token");
+          const state = get();
+          
+          // If we have a token but no user state, or vice versa, clear everything
+          if ((token && !state.user) || (!token && state.user)) {
+            localStorage.removeItem("auth-token");
+            set({
+              user: null,
+              isAuthenticated: false,
+              error: null,
+              isLoading: false,
+            });
+          }
+        },
       }),
       {
         name: "auth-storage",
