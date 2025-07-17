@@ -35,3 +35,4 @@ next-env.d.ts
 
 # Bolt folder (exclude from git)
 .bolt/
+.env
