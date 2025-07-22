@@ -9,7 +9,6 @@ import {
   SignUpData,
   ForgotPasswordData,
   ResetPasswordData,
-  GoogleAuthData,
 } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -100,29 +99,6 @@ export const useAuth = () => {
     },
   });
 
-  const googleAuthMutation = useMutation({
-    mutationFn: (data: GoogleAuthData) => apiClient.googleAuth(data),
-    onMutate: () => {
-      setLoading(true);
-      clearError();
-    },
-    onSuccess: (response) => {
-      setUser(response.user);
-      setLoading(false);
-      toast.success("Successfully signed in with Google!");
-
-      // Store token in localStorage
-      localStorage.setItem("auth-token", response.token);
-
-      // Redirect to dashboard
-      router.push("/dashboard");
-    },
-    onError: (error: Error) => {
-      setError(error.message);
-      toast.error(error.message);
-    },
-  });
-
   const handleLogout = () => {
     logout();
     localStorage.removeItem("auth-token");
@@ -135,19 +111,16 @@ export const useAuth = () => {
     signUp: signUpMutation.mutate,
     forgotPassword: forgotPasswordMutation.mutate,
     resetPassword: resetPasswordMutation.mutate,
-    googleAuth: googleAuthMutation.mutate,
     logout: handleLogout,
     isLoading:
       signInMutation.isPending ||
       signUpMutation.isPending ||
       forgotPasswordMutation.isPending ||
-      resetPasswordMutation.isPending ||
-      googleAuthMutation.isPending,
+      resetPasswordMutation.isPending,
     // Individual loading states for better UX
     isSigningIn: signInMutation.isPending,
     isSigningUp: signUpMutation.isPending,
     isSendingResetEmail: forgotPasswordMutation.isPending,
     isResettingPassword: resetPasswordMutation.isPending,
-    isGoogleAuth: googleAuthMutation.isPending,
   };
 };
