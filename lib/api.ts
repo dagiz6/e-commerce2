@@ -28,7 +28,7 @@ export interface AuthResponse {
     id: string;
     email: string;
     name: string;
-    avatar?: string;
+    // avatar?: string;
   };
   token: string;
   message: string;

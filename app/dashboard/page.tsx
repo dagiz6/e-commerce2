@@ -22,23 +22,31 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, isLoading, logout } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    // If user is not authenticated, redirect to sign-in
-    if (!isAuthenticated) {
+    // Only redirect if not loading and not authenticated
+    if (!isLoading && !isAuthenticated) {
       router.push("/auth/sign-in");
     }
-  }, [isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("auth-token");
     logout();
     router.push("/auth/sign-in");
   };
 
-  // Don't render dashboard if user is not authenticated (prevents flash)
+  // Show loading state while store is hydrating
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  // Don't render dashboard if user is not authenticated
   if (!isAuthenticated || !user) {
     return null;
   }

@@ -23,12 +23,10 @@ export const useAuth = () => {
       clearError();
     },
     onSuccess: (response) => {
-      setUser(response.user);
+      // Assuming response contains user and token
+      setUser(response.user, response.token, 86400); // Set token to expire in 1 day (86,400 seconds)
       setLoading(false);
       toast.success("Successfully signed in!");
-
-      // Store token in localStorage
-      localStorage.setItem("auth-token", response.token);
 
       // Redirect to dashboard
       router.push("/dashboard");
@@ -46,12 +44,10 @@ export const useAuth = () => {
       clearError();
     },
     onSuccess: (response) => {
-      setUser(response.user);
+      // Assuming response contains user and token
+      setUser(response.user, response.token, 86400); // Set token to expire in 1 day (86,400 seconds)
       setLoading(false);
       toast.success("Account created successfully!");
-
-      // Store token in localStorage
-      localStorage.setItem("auth-token", response.token);
 
       // Redirect to dashboard
       router.push("/dashboard");

@@ -8,18 +8,19 @@ import { useAuthStore } from "@/stores/auth-store";
 export default function SignInPage() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
+  
 
-  useEffect(() => {
-    // If user is already authenticated, redirect to dashboard
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, router]);
+  // useEffect(() => {
+  //   // If user is already authenticated, redirect to dashboard
+  //   if (isAuthenticated) {
+  //     router.push("/dashboard");
+  //   }
+  // }, [isAuthenticated, router]);
 
-  // Don't render auth page if user is authenticated (prevents flash)
-  if (isAuthenticated) {
-    return null;
-  }
+  // // Don't render auth page if user is authenticated (prevents flash)
+  // if (isAuthenticated) {
+  //   return null;
+  // }
 
   return <AuthPage />;
 }
