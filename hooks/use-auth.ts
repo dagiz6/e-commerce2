@@ -22,11 +22,11 @@ export const useAuth = () => {
         router.push("/admin");
         break;
       case "vendor":
-        router.push("/vendor");
+        router.push("/auth/vendor");
         break;
       case "user":
       default:
-        router.push("/dashboard");
+        router.push("/auth/dashboard");
         break;
     }
   };

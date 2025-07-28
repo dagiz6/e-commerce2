@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 // Admin email - only this email can access admin panel
-const ADMIN_EMAIL = "admin@shophub.com";
+const ADMIN_EMAIL = "admin@admin.com";
 
 export default function AdminPage() {
   const { isAuthenticated, user, logout } = useAuthStore();
