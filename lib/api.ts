@@ -12,6 +12,7 @@ export interface SignUpData {
   name: string;
   email: string;
   password: string;
+  role: string; 
 }
 
 export interface ForgotPasswordData {
@@ -28,6 +29,7 @@ export interface AuthResponse {
     id: string;
     email: string;
     name: string;
+    role: string;
     // avatar?: string;
   };
   token: string;

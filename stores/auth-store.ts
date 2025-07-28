@@ -7,6 +7,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  role: string;
   avatar?: string;
 }
 
@@ -15,6 +16,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+
 
   // Actions
   setUser: (user: User | null, token?: string, expiresIn?: number) => void;

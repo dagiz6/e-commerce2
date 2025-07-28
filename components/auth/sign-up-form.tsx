@@ -14,6 +14,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface SignUpFormProps {
   onSwitchToSignIn: () => void;
@@ -25,8 +32,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToSignIn }) => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    role: "user",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signUp, isLoading } = useAuth();
@@ -34,8 +42,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToSignIn }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      // This would normally be handled by the error state
+    if (formData.password !== confirmPassword) {
+      alert("Passwords do not match");
       return;
     }
 
@@ -149,8 +157,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToSignIn }) => {
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 className="pl-10 pr-10 h-11 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
               />
@@ -168,11 +176,30 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToSignIn }) => {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="role" className="text-sm font-medium text-gray-700">
+              Account Type
+            </Label>
+            <Select
+              name="role"
+              value={formData.role}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, role: value }))
+              }
+            >
+              <SelectTrigger className="h-11 border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+                <SelectValue placeholder="Select account type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">Customer</SelectItem>
+                <SelectItem value="vendor">Vendor</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             type="submit"
-            disabled={
-              isLoading || formData.password !== formData.confirmPassword
-            }
+            disabled={isLoading || formData.password !== confirmPassword}
             className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
           >
             {isLoading ? "Creating Account..." : "Create Account"}

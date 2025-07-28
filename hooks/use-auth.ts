@@ -16,6 +16,22 @@ export const useAuth = () => {
   const { setUser, setLoading, setError, logout, clearError } = useAuthStore();
   const router = useRouter();
 
+  const redirectByRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        router.push("/admin");
+        break;
+      case "vendor":
+        router.push("/vendor");
+        break;
+      case "user":
+      default:
+        router.push("/dashboard");
+        break;
+    }
+  };
+
+  
   const signInMutation = useMutation({
     mutationFn: (data: SignInData) => apiClient.signIn(data),
     onMutate: () => {
@@ -29,7 +45,7 @@ export const useAuth = () => {
       toast.success("Successfully signed in!");
 
       // Redirect to dashboard
-      router.push("/dashboard");
+      redirectByRole(response.user.role);
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -37,26 +53,38 @@ export const useAuth = () => {
     },
   });
 
-  const signUpMutation = useMutation({
-    mutationFn: (data: SignUpData) => apiClient.signUp(data),
-    onMutate: () => {
-      setLoading(true);
-      clearError();
-    },
-    onSuccess: (response) => {
-      // Assuming response contains user and token
-      setUser(response.user, response.token, 86400); // Set token to expire in 1 day (86,400 seconds)
+const signUpMutation = useMutation({
+  mutationFn: (data: SignUpData) => apiClient.signUp(data),
+  onMutate: () => {
+    setLoading(true);
+    clearError();
+  },
+  onSuccess: (response: any) => {
+    const user = response?.data?.user;
+    const token = response?.data?.token;
+
+    if (!user || !user.role) {
+      console.error("Signup succeeded but user or role is missing:", response);
+      toast.error("Signup failed: user data is incomplete.");
       setLoading(false);
-      toast.success("Account created successfully!");
+      return;
+    }
 
-      // Redirect to dashboard
-      router.push("/dashboard");
-    },
-    onError: (error: Error) => {
-      setError(error.message);
-      toast.error(error.message);
-    },
-  });
+    setLoading(false);
+    toast.success("Account created successfully! Redirecting to sign in...");
+
+    setTimeout(() => {
+      router.push("/auth/sign-in");
+    }, 200); // Optional delay for UX
+  },
+  onError: (error: Error) => {
+    setError(error.message);
+    toast.error(error.message);
+    setLoading(false);
+  },
+});
+
+
 
   const forgotPasswordMutation = useMutation({
     mutationFn: (data: ForgotPasswordData) => apiClient.forgotPassword(data),
