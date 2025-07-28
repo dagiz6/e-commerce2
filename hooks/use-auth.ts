@@ -22,7 +22,7 @@ export const useAuth = () => {
         router.push("/admin");
         break;
       case "vendor":
-        router.push("/auth/vendor");
+        router.push("/vendor");
         break;
       case "user":
       default:
