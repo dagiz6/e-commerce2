@@ -26,7 +26,7 @@ export const useAuth = () => {
         break;
       case "user":
       default:
-        router.push("/auth/dashboard");
+        router.push("/dashboard");
         break;
     }
   };
