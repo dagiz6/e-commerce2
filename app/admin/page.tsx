@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 // Admin email - only this email can access admin panel
-const ADMIN_EMAIL = "admin@admin.com";
+// const ADMIN_EMAIL = process.env.NEXT_ADMIN_EMAIL
 
 export default function AdminPage() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -39,7 +39,7 @@ export default function AdminPage() {
     }
 
     // If user is not admin or doesn't have admin email, redirect to appropriate page
-    if (user && (user.role !== "admin" || user.email !== ADMIN_EMAIL)) {
+    if (user && (user.role !== "admin")) {
       switch (user.role) {
         case "vendor":
           router.push("/vendor");
@@ -63,8 +63,8 @@ export default function AdminPage() {
   if (
     !isAuthenticated ||
     !user ||
-    user.role !== "admin" ||
-    user.email !== ADMIN_EMAIL
+    user.role !== "admin" 
+    // ||  user.email !== ADMIN_EMAIL
   ) {
     return null;
   }
