@@ -18,22 +18,35 @@ import {
   Filter,
   Star,
   ShoppingCart,
+  Search,
 } from "lucide-react";
 
-export default function DashboardPage() {
-  const { isAuthenticated, user, isLoading, logout } = useAuthStore();
-  const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  type Product = {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    rating: number;
-    image: string;
-  };
+// Define the Product interface
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  rating: number;
+  image: string;
+}
 
-  const [cart, setCart] = useState<Product[]>([]);
+// Define the AuthStore interface
+interface AuthStore {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: { name: string; email: string; role: string } | null;
+  logout: () => void;
+  cart: Product[] | undefined;
+  setCart: (cart: Product[] | undefined) => void;
+}
+
+export default function DashboardPage() {
+  const { isAuthenticated, user, isLoading, logout, cart, setCart } =
+    useAuthStore() as AuthStore;
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     if (!isLoading) {
@@ -55,17 +68,21 @@ export default function DashboardPage() {
     router.push("/auth/sign-in");
   };
 
-  const handleAddToCart = (product: Product): void => {
-    setCart((prevCart) => [...prevCart, product]);
+  const handleAddToCart = (product: Product) => {
+    if (cart) {
+      setCart([...cart, product]);
+    } else {
+      setCart([product]);
+    }
   };
 
   // Sample product data
-  const products = [
+  const products: Product[] = [
     {
       id: 1,
       name: "Wireless Headphones",
       category: "Electronics",
-      price: 59.99,
+      price: 1399.99,
       rating: 4.5,
       image:
         "https://m.media-amazon.com/images/I/61dKFrBZ-4L._UF1000,1000_QL80_.jpg",
@@ -74,7 +91,7 @@ export default function DashboardPage() {
       id: 2,
       name: "Running Shoes",
       category: "Fashion",
-      price: 89.99,
+      price: 3999.99,
       rating: 4.2,
       image:
         "https://merrell.com.ph/cdn/shop/files/MRLW-J068286-082823-F24-000.jpg",
@@ -83,7 +100,7 @@ export default function DashboardPage() {
       id: 3,
       name: "Smartphone",
       category: "Electronics",
-      price: 299.99,
+      price: 20999.99,
       rating: 4.8,
       image:
         "https://image.made-in-china.com/2f0j00DNVcylpIrKkL/2024-New-Smart-Phone-3GB-64GB-6-5-Inch-Original-Smart-Mobile-Phones-Android9-Cell-Phone-cellular-Low-Price-Mobile-Phone.webp",
@@ -92,7 +109,7 @@ export default function DashboardPage() {
       id: 4,
       name: "Leather Jacket",
       category: "Fashion",
-      price: 129.99,
+      price: 4999.99,
       rating: 4.0,
       image: "https://www.voganow.com/cdn/shop/files/BBGJ-1108-014_2_copy.jpg",
     },
@@ -100,7 +117,7 @@ export default function DashboardPage() {
       id: 5,
       name: "Coffee Maker",
       category: "Home",
-      price: 49.99,
+      price: 1999.99,
       rating: 4.3,
       image: "https://i.ebayimg.com/images/g/y-YAAOSwIgNXtwxu/s-l1200.jpg",
     },
@@ -108,7 +125,7 @@ export default function DashboardPage() {
       id: 6,
       name: "Backpack",
       category: "Accessories",
-      price: 39.99,
+      price: 999.99,
       rating: 4.1,
       image:
         "https://icon.in/cdn/shop/files/1_fa9a4222-bb3b-4529-984f-84a806de978b.jpg",
@@ -116,13 +133,23 @@ export default function DashboardPage() {
   ];
 
   // Sample categories
-  const categories = ["All", "Electronics", "Fashion", "Home", "Accessories"];
+  const categories: string[] = [
+    "All",
+    "Electronics",
+    "Fashion",
+    "Home",
+    "Accessories",
+  ];
 
-  // Filter products based on selected category
-  const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  // Filter products based on selected category and search query
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   if (isLoading) {
     return (
@@ -147,11 +174,21 @@ export default function DashboardPage() {
                 <ShoppingBag className="h-5 w-5 text-white" />
               </div>
               <h1 className="text-xl font-bold text-gray-900">
-                ShopHub 
+                ShopHub Dashboard
               </h1>
             </div>
 
             <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-600"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              </div>
               <div className="relative">
                 <Button
                   variant="outline"
@@ -161,7 +198,7 @@ export default function DashboardPage() {
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Cart
-                  {cart.length > 0 && (
+                  {cart && cart.length > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cart.length}
                     </span>
@@ -244,43 +281,51 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredProducts.map((product) => (
-              <Card
-                key={product.id}
-                className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow"
-              >
-                <CardContent className="p-4">
-                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">{product.category}</p>
-                    <div className="flex items-center mt-2">
-                      <Star className="h-4 w-4 text-yellow-400" />
-                      <span className="ml-1 text-sm text-gray-600">
-                        {product.rating}
-                      </span>
+            {filteredProducts.length === 0 ? (
+              <p className="text-gray-600 col-span-full text-center">
+                No products found.
+              </p>
+            ) : (
+              filteredProducts.map((product) => (
+                <Card
+                  key={product.id}
+                  className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow"
+                >
+                  <CardContent className="p-4">
+                    <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-full w-full object-cover object-center"
+                      />
                     </div>
-                    <p className="text-xl font-bold text-gray-900 mt-2">
-                      ${product.price.toFixed(2)}
-                    </p>
-                    <Button
-                      className="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="mt-4">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {product.category}
+                      </p>
+                      <div className="flex items-center mt-2">
+                        <Star className="h-4 w-4 text-yellow-400" />
+                        <span className="ml-1 text-sm text-gray-600">
+                          {product.rating}
+                        </span>
+                      </div>
+                      <p className="text-xl font-bold text-gray-900 mt-2">
+                        {product.price.toFixed(2)} ETB
+                      </p>
+                      <Button
+                        className="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </main>
@@ -292,24 +337,34 @@ export default function DashboardPage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">ShopHub</h3>
               <p className="text-sm text-gray-600 mt-2">
-                Your one-stop shop for electronics, fashion, home goods, and more.
+                Your one-stop shop for electronics, fashion, home goods, and
+                more.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Links</h3>
               <ul className="mt-2 space-y-2">
                 <li>
-                  <a href="/about" className="text-sm text-gray-600 hover:text-purple-600">
+                  <a
+                    href="/about"
+                    className="text-sm text-gray-600 hover:text-purple-600"
+                  >
                     About Us
                   </a>
                 </li>
                 <li>
-                  <a href="/contact" className="text-sm text-gray-600 hover:text-purple-600">
+                  <a
+                    href="/contact"
+                    className="text-sm text-gray-600 hover:text-purple-600"
+                  >
                     Contact
                   </a>
                 </li>
                 <li>
-                  <a href="/terms" className="text-sm text-gray-600 hover:text-purple-600">
+                  <a
+                    href="/terms"
+                    className="text-sm text-gray-600 hover:text-purple-600"
+                  >
                     Terms of Service
                   </a>
                 </li>

@@ -11,12 +11,22 @@ export interface User {
   avatar?: string;
 }
 
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  rating: number;
+  image: string;
+}
+
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
 
+  cart: Product[] | undefined;
 
   // Actions
   setUser: (user: User | null, token?: string, expiresIn?: number) => void;
@@ -25,6 +35,7 @@ interface AuthState {
   logout: () => void;
   clearError: () => void;
   setState: (partial: Partial<AuthState>) => void;
+  setCart: (cart: Product[] | undefined) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,6 +46,8 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: false,
         isLoading: true, // Start with isLoading: true to indicate hydration
         error: null,
+        cart: [],
+        setCart: (cart) => set({ cart }),
         setState: (partial) => set((state) => ({ ...state, ...partial })),
 
         setUser: (user, token, expiresIn) => {
