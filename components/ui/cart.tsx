@@ -99,7 +99,7 @@ export default function Cart({ cart, setCart }: CartProps) {
                 <div className="flex justify-between border-t border-gray-200 pt-4">
                   <p className="text-lg font-semibold text-gray-900">Total</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    ${totalPrice.toFixed(2)}
+                    {totalPrice.toFixed(2)} ETB
                   </p>
                 </div>
                 <Button className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
