@@ -28,30 +28,33 @@ import {
 // const ADMIN_EMAIL = process.env.NEXT_ADMIN_EMAIL
 
 export default function AdminPage() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, isLoading, logout } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     // If user is not authenticated, redirect to sign-in
-    if (!isAuthenticated) {
-      router.push("/auth/sign-in");
-      return;
-    }
 
-    // If user is not admin or doesn't have admin email, redirect to appropriate page
-    if (user && (user.role !== "admin")) {
-      switch (user.role) {
-        case "vendor":
-          router.push("/vendor");
-          break;
-        case "client":
-          router.push("/dashboard");
-          break;
-        default:
-          router.push("/dashboard");
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push("/auth/sign-in");
+        return;
+      }
+
+      // If user is not admin or doesn't have admin email, redirect to appropriate page
+      if (user && user.role !== "admin") {
+        switch (user.role) {
+          case "vendor":
+            router.push("/vendor");
+            break;
+          case "client":
+            router.push("/dashboard");
+            break;
+          default:
+            router.push("/dashboard");
+        }
       }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, isLoading, router]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth-token");

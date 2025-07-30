@@ -24,30 +24,33 @@ import {
 } from "lucide-react";
 
 export default function VendorPage() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, isLoading, logout } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     // If user is not authenticated, redirect to sign-in
-    if (!isAuthenticated) {
-      router.push("/auth/sign-in");
-      return;
-    }
 
-    // If user is not a vendor, redirect to appropriate page
-    if (user && user.role !== "vendor") {
-      switch (user.role) {
-        case "admin":
-          router.push("/admin");
-          break;
-        case "client":
-          router.push("/dashboard");
-          break;
-        default:
-          router.push("/dashboard");
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push("/auth/sign-in");
+        return;
+      }
+
+      // If user is not a vendor, redirect to appropriate page
+      if (user && user.role !== "vendor") {
+        switch (user.role) {
+          case "admin":
+            router.push("/admin");
+            break;
+          case "user":
+            router.push("/dashboard");
+            break;
+          default:
+            router.push("/dashboard");
+        }
       }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router , isLoading]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth-token");

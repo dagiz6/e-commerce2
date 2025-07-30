@@ -42,6 +42,7 @@ useEffect(() => {
 }, [isLoading, isAuthenticated, user, router]);
 
   const handleLogout = () => {
+    localStorage.removeItem("auth-token");
     logout();
     router.push("/auth/sign-in");
   };
