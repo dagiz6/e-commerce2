@@ -83,7 +83,7 @@ export default function Cart({ cart, setCart }: CartProps) {
                       <div>
                         <p className="font-medium text-gray-900">{item.name}</p>
                         <p className="text-sm text-gray-600">
-                          ${item.price.toFixed(2)}
+                          {item.price.toFixed(2)} ETB
                         </p>
                       </div>
                     </div>

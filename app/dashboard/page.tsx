@@ -178,7 +178,7 @@ export default function DashboardPage() {
                <ShoppingBag className="h-5 w-5 text-white" />
              </div>
              <h1 className="text-xl font-bold text-gray-900">
-               ShopHub Dashboard
+               ShopHub
              </h1>
            </div>
 
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                  variant="outline"
                  size="sm"
                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                 onClick={() => router.push("/cart")}
+                 onClick={() => router.push("/dashboard/cart")}
                >
                  <ShoppingCart className="h-4 w-4 mr-2" />
                  Cart
