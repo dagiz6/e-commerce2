@@ -19,6 +19,7 @@ import {
   Star,
   ShoppingCart,
   Search,
+  Menu,
 } from "lucide-react";
 
 // Define the Product interface
@@ -47,6 +48,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isLoading) {
@@ -171,49 +173,55 @@ export default function DashboardPage() {
    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
      {/* Header */}
      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-         <div className="flex justify-between items-center h-16">
-           <div className="flex items-center space-x-3">
+       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+         <div className="flex justify-between items-center h-16 sm:h-20">
+           <div className="flex items-center space-x-2 sm:space-x-3">
+             <button
+               className="sm:hidden"
+               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+             >
+               <Menu className="h-6 w-6 text-gray-700" />
+             </button>
              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                <ShoppingBag className="h-5 w-5 text-white" />
              </div>
-             <h1 className="text-xl font-bold text-gray-900">
-               ShopHub
+             <h1 className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">
+               ShopHub 
              </h1>
            </div>
 
-           <div className="flex items-center space-x-4">
-             <div className="relative">
+           <div className="flex items-center space-x-2 sm:space-x-4">
+             <div className="relative w-24 sm:w-40 md:w-48">
                <input
                  type="text"
-                 placeholder="Search products..."
+                 placeholder="Search..."
                  value={searchQuery}
                  onChange={(e) => setSearchQuery(e.target.value)}
-                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-600"
+                 className="pl-8 pr-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
                />
-               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
              </div>
              <div className="relative">
                <Button
                  variant="outline"
                  size="sm"
-                 className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                 className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs h-8 sm:h-9"
                  onClick={() => router.push("/dashboard/cart")}
                >
-                 <ShoppingCart className="h-4 w-4 mr-2" />
+                 <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                  Cart
                  {cart && cart.length > 0 && (
-                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                   <span className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                      {cart.length}
                    </span>
                  )}
                </Button>
              </div>
-             <div className="flex items-center space-x-2">
-               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                 <User className="h-4 w-4 text-white" />
+             <div className="flex items-center space-x-1 sm:space-x-2">
+               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                 <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                </div>
-               <span className="text-sm font-medium text-gray-700">
+               <span className="text-xs sm:text-sm font-medium text-gray-700 hidden sm:inline">
                  {user.name}
                </span>
              </div>
@@ -221,9 +229,9 @@ export default function DashboardPage() {
                onClick={handleLogout}
                variant="outline"
                size="sm"
-               className="border-gray-300 text-gray-700 hover:bg-gray-50"
+               className="border-gray-300 text-gray-700 hover:bg-gray-50 text-xs h-8 sm:h-9"
              >
-               <LogOut className="h-4 w-4 mr-2" />
+               <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                Logout
              </Button>
            </div>
@@ -232,103 +240,116 @@ export default function DashboardPage() {
      </header>
 
      {/* Main Content */}
-     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex">
-       {/* Categories Sidebar */}
-       <aside className="w-64 mr-8">
-         <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
-           <CardHeader>
-             <CardTitle className="text-xl font-bold text-gray-900">
-               Categories
-             </CardTitle>
-             <CardDescription>Browse by category</CardDescription>
-           </CardHeader>
-           <CardContent>
-             <div className="space-y-2">
-               {categories.map((category) => (
-                 <button
-                   key={category}
-                   onClick={() => setSelectedCategory(category)}
-                   className={`w-full text-left px-4 py-2 rounded-md ${
-                     selectedCategory === category
-                       ? "bg-purple-100 text-purple-600"
-                       : "text-gray-700 hover:bg-gray-50"
-                   }`}
-                 >
-                   {category}
-                 </button>
-               ))}
-             </div>
-           </CardContent>
-         </Card>
-       </aside>
+     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+       <div className="flex flex-col sm:flex-row">
+         {/* Categories Sidebar */}
+         <aside
+           className={`w-full sm:w-64 sm:mr-8 ${
+             isSidebarOpen ? "block" : "hidden sm:block"
+           }`}
+         >
+           <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+             <CardHeader>
+               <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">
+                 Categories
+               </CardTitle>
+               <CardDescription className="text-xs sm:text-sm">
+                 Browse by category
+               </CardDescription>
+             </CardHeader>
+             <CardContent>
+               <div className="space-y-2">
+                 {categories.map((category) => (
+                   <button
+                     key={category}
+                     onClick={() => {
+                       setSelectedCategory(category);
+                       setIsSidebarOpen(false); // Close sidebar on mobile
+                     }}
+                     className={`w-full text-left px-4 py-2 rounded-md text-sm sm:text-base ${
+                       selectedCategory === category
+                         ? "bg-purple-100 text-purple-600"
+                         : "text-gray-700 hover:bg-gray-50"
+                     }`}
+                   >
+                     {category}
+                   </button>
+                 ))}
+               </div>
+             </CardContent>
+           </Card>
+         </aside>
 
-       {/* Product Grid */}
-       <div className="flex-1">
-         <div className="flex justify-between items-center mb-8">
-           <h2 className="text-3xl font-bold text-gray-900">
-             Welcome back, {user.name}!
-           </h2>
-           <div className="flex items-center space-x-2">
-             <Filter className="h-5 w-5 text-gray-600" />
-             <select
-               value={selectedCategory}
-               onChange={(e) => setSelectedCategory(e.target.value)}
-               className="border-gray-300 rounded-md p-2 text-gray-700"
-             >
-               {categories.map((category) => (
-                 <option key={category} value={category}>
-                   {category}
-                 </option>
-               ))}
-             </select>
-           </div>
-         </div>
-
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-           {filteredProducts.length === 0 ? (
-             <p className="text-gray-600 col-span-full text-center">
-               No products found.
-             </p>
-           ) : (
-             filteredProducts.map((product) => (
-               <Card
-                 key={product.id}
-                 className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow"
+         {/* Product Grid */}
+         <div className="flex-1 mt-6 sm:mt-0">
+           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
+             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
+               Welcome back, {user.name}!
+             </h2>
+             <div className="flex items-center space-x-2 w-full sm:w-auto">
+               <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+               <select
+                 value={selectedCategory}
+                 onChange={(e) => setSelectedCategory(e.target.value)}
+                 className="border-gray-300 rounded-md p-1 sm:p-2 text-sm sm:text-base text-gray-700 w-full sm:w-auto"
                >
-                 <CardContent className="p-4">
-                   <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
-                     <img
-                       src={product.image}
-                       alt={product.name}
-                       className="h-full w-full object-cover object-center"
-                     />
-                   </div>
-                   <div className="mt-4">
-                     <h3 className="text-lg font-semibold text-gray-900">
-                       {product.name}
-                     </h3>
-                     <p className="text-sm text-gray-600">{product.category}</p>
-                     <div className="flex items-center mt-2">
-                       <Star className="h-4 w-4 text-yellow-400" />
-                       <span className="ml-1 text-sm text-gray-600">
-                         {product.rating}
-                       </span>
+                 {categories.map((category) => (
+                   <option key={category} value={category}>
+                     {category}
+                   </option>
+                 ))}
+               </select>
+             </div>
+           </div>
+
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+             {filteredProducts.length === 0 ? (
+               <p className="text-gray-600 col-span-full text-center text-sm sm:text-base">
+                 No products found.
+               </p>
+             ) : (
+               filteredProducts.map((product) => (
+                 <Card
+                   key={product.id}
+                   className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow"
+                 >
+                   <CardContent className="p-3 sm:p-4">
+                     <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                       <img
+                         src={product.image}
+                         alt={product.name}
+                         className="h-full w-full object-cover object-center"
+                       />
                      </div>
-                     <p className="text-xl font-bold text-gray-900 mt-2">
-                       {product.price.toFixed(2)} ETB
-                     </p>
-                     <Button
-                       className="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white"
-                       onClick={() => handleAddToCart(product)}
-                       disabled={isProductInCart(product.id)}
-                     >
-                       {isProductInCart(product.id) ? "Added" : "Add to Cart"}
-                     </Button>
-                   </div>
-                 </CardContent>
-               </Card>
-             ))
-           )}
+                     <div className="mt-3 sm:mt-4">
+                       <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+                         {product.name}
+                       </h3>
+                       <p className="text-xs sm:text-sm text-gray-600">
+                         {product.category}
+                       </p>
+                       <div className="flex items-center mt-1 sm:mt-2">
+                         <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
+                         <span className="ml-1 text-xs sm:text-sm text-gray-600">
+                           {product.rating}
+                         </span>
+                       </div>
+                       <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1 sm:mt-2">
+                         ${product.price.toFixed(2)}
+                       </p>
+                       <Button
+                         className="mt-3 sm:mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs sm:text-sm py-1 sm:py-2"
+                         onClick={() => handleAddToCart(product)}
+                         disabled={isProductInCart(product.id)}
+                       >
+                         {isProductInCart(product.id) ? "Added" : "Add to Cart"}
+                       </Button>
+                     </div>
+                   </CardContent>
+                 </Card>
+               ))
+             )}
+           </div>
          </div>
        </div>
      </main>
