@@ -1,7 +1,7 @@
 "use client";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://your-backend-api.com";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export interface SignInData {
   email: string;
@@ -34,6 +34,15 @@ export interface AuthResponse {
   };
   token: string;
   message: string;
+}
+
+export interface ProductData {
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  stock: number;
+  images: string[];
 }
 
 class ApiClient {
@@ -114,6 +123,13 @@ class ApiClient {
     });
 
     return this.request<{ message: string }>("/auth/resetPassword", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async createProduct(data: ProductData): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/products/createProduct", {
       method: "POST",
       body: JSON.stringify(data),
     });

@@ -335,7 +335,7 @@ export default function DashboardPage() {
                          </span>
                        </div>
                        <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1 sm:mt-2">
-                         ${product.price.toFixed(2)}
+                         {product.price.toFixed(2)} ETB
                        </p>
                        <Button
                          className="mt-3 sm:mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs sm:text-sm py-1 sm:py-2"
