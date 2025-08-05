@@ -128,10 +128,11 @@ class ApiClient {
     });
   }
 
-  async createProduct(data: ProductData): Promise<{ message: string }> {
+  async createProduct(data: FormData): Promise<{ message: string }> {
     return this.request<{ message: string }>("/products/createProduct", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
+      headers: {},
     });
   }
 }

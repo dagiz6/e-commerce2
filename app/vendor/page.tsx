@@ -29,7 +29,7 @@ export default function VendorPage() {
     description: "",
     category: "",
     stock: "",
-    images: [] as string[],
+    images: [] as File[],
   });
 
   useEffect(() => {
@@ -55,11 +55,7 @@ export default function VendorPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      Promise.all(Array.from(files).map(file => new Promise<string>(resolve => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      }))).then(imageUrls => setFormData({ ...formData, images: imageUrls }));
+      setFormData({ ...formData, images: Array.from(files) });
     }
   };
 
@@ -85,14 +81,17 @@ export default function VendorPage() {
       return;
     }
 
-    createProduct({
-      name: formData.name,
-      price: Number(formData.price),
-      description: formData.description,
-      category: formData.category,
-      stock: Number(formData.stock),
-      images: formData.images,
-    });
+
+
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("price", formData.price);
+    data.append("description", formData.description);
+    data.append("category", formData.category);
+    data.append("stock", formData.stock);
+    formData.images.forEach((file) => data.append("images", file));
+    createProduct(data as any);
+
     setFormData({ name: "", price: "", description: "", category: "", stock: "", images: [] });
     setIsModalOpen(false);
   };
@@ -116,15 +115,21 @@ export default function VendorPage() {
             <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg flex items-center justify-center transition-transform hover:scale-105">
               <ShoppingBag className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">Vendor Dashboard</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              Vendor Dashboard
+            </h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-teal-600 rounded-full flex items-center justify-center transition-transform hover:scale-105">
                 <User className="h-4 w-4 text-white" />
               </div>
-              <span className="text-sm font-medium text-gray-700">{user.name}</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Vendor</span>
+              <span className="text-sm font-medium text-gray-700">
+                {user.name}
+              </span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                Vendor
+              </span>
             </div>
             <Button
               onClick={handleLogout}
@@ -142,25 +147,54 @@ export default function VendorPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user.name}!</h2>
-          <p className="text-gray-600">Manage your products, orders, and grow your business.</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back, {user.name}!
+          </h2>
+          <p className="text-gray-600">
+            Manage your products, orders, and grow your business.
+          </p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[
-            { title: "Total Products", value: "156", icon: Package, color: "from-blue-500 to-blue-600" },
-            { title: "Total Sales", value: "12,450 ETB", icon: DollarSign, color: "from-green-500 to-green-600" },
-            { title: "Orders", value: "89", icon: TrendingUp, color: "from-purple-500 to-purple-600" },
-            { title: "Customers", value: "234", icon: Users, color: "from-orange-500 to-orange-600" },
+            {
+              title: "Total Products",
+              value: "156",
+              icon: Package,
+              color: "from-blue-500 to-blue-600",
+            },
+            {
+              title: "Total Sales",
+              value: "12,450 ETB",
+              icon: DollarSign,
+              color: "from-green-500 to-green-600",
+            },
+            {
+              title: "Orders",
+              value: "89",
+              icon: TrendingUp,
+              color: "from-purple-500 to-purple-600",
+            },
+            {
+              title: "Customers",
+              value: "234",
+              icon: Users,
+              color: "from-orange-500 to-orange-600",
+            },
           ].map(({ title, value, icon: Icon, color }) => (
-            <Card key={title} className="border-0 shadow-lg bg-white/95 backdrop-blur-sm transition-transform hover:scale-105">
+            <Card
+              key={title}
+              className="border-0 shadow-lg bg-white/95 backdrop-blur-sm transition-transform hover:scale-105"
+            >
               <CardContent className="p-6 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">{title}</p>
                   <p className="text-2xl font-bold text-gray-900">{value}</p>
                 </div>
-                <div className={`w-12 h-12 bg-gradient-to-r ${color} rounded-lg flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 bg-gradient-to-r ${color} rounded-lg flex items-center justify-center`}
+                >
                   <Icon className="h-6 w-6 text-white" />
                 </div>
               </CardContent>
@@ -172,7 +206,9 @@ export default function VendorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-900">Quick Actions</CardTitle>
+              <CardTitle className="text-xl font-bold text-gray-900">
+                Quick Actions
+              </CardTitle>
               <CardDescription>Manage your store efficiently</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -188,7 +224,11 @@ export default function VendorPage() {
                 { text: "View Analytics", icon: BarChart3 },
                 { text: "Customer Support", icon: Users },
               ].map(({ text, icon: Icon }) => (
-                <Button key={text} variant="outline" className="w-full justify-start transition-all hover:shadow-md">
+                <Button
+                  key={text}
+                  variant="outline"
+                  className="w-full justify-start transition-all hover:shadow-md"
+                >
                   <Icon className="h-4 w-4 mr-2" />
                   {text}
                 </Button>
@@ -198,24 +238,37 @@ export default function VendorPage() {
 
           <Card className="lg:col-span-2 border-0 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-900">Recent Orders</CardTitle>
-              <CardDescription>Latest orders from your customers</CardDescription>
+              <CardTitle className="text-xl font-bold text-gray-900">
+                Recent Orders
+              </CardTitle>
+              <CardDescription>
+                Latest orders from your customers
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[1, 2, 3, 4].map(order => (
-                  <div key={order} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
+                {[1, 2, 3, 4].map((order) => (
+                  <div
+                    key={order}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]"
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg flex items-center justify-center">
                         <Package className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Order #{2000 + order}</p>
-                        <p className="text-sm text-gray-600">Customer {order} • ETB {(order * 25.99).toFixed(2)}</p>
+                        <p className="font-medium text-gray-900">
+                          Order #{2000 + order}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Customer {order} • ETB {(order * 25.99).toFixed(2)}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Processing</span>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                        Processing
+                      </span>
                       <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
                     </div>
                   </div>
@@ -237,19 +290,33 @@ export default function VendorPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 clearError();
-                setFormData({ name: "", price: "", description: "", category: "", stock: "", images: [] });
+                setFormData({
+                  name: "",
+                  price: "",
+                  description: "",
+                  category: "",
+                  stock: "",
+                  images: [],
+                });
               }}
             >
               <X className="h-5 w-5" />
             </Button>
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-900">Upload New Product</CardTitle>
+              <CardTitle className="text-xl font-bold text-gray-900">
+                Upload New Product
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6 ">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Title</label>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Product Title
+                    </label>
                     <input
                       type="text"
                       name="name"
@@ -261,7 +328,12 @@ export default function VendorPage() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price (ETB)</label>
+                    <label
+                      htmlFor="price"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Price (ETB)
+                    </label>
                     <input
                       type="number"
                       name="price"
@@ -276,7 +348,12 @@ export default function VendorPage() {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Description
+                  </label>
                   <textarea
                     name="description"
                     id="description"
@@ -289,7 +366,12 @@ export default function VendorPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+                    <label
+                      htmlFor="category"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Category
+                    </label>
                     <select
                       name="category"
                       id="category"
@@ -306,7 +388,12 @@ export default function VendorPage() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="stock" className="block text-sm font-medium text-gray-700">Stock Quantity</label>
+                    <label
+                      htmlFor="stock"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Stock Quantity
+                    </label>
                     <input
                       type="number"
                       name="stock"
@@ -320,7 +407,12 @@ export default function VendorPage() {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="images" className="block text-sm font-medium text-gray-700">Product Images</label>
+                  <label
+                    htmlFor="images"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Product Images
+                  </label>
                   <input
                     type="file"
                     name="images"
@@ -336,7 +428,7 @@ export default function VendorPage() {
                       {formData.images.map((image, index) => (
                         <img
                           key={index}
-                          src={image}
+                          src={URL.createObjectURL(image)}
                           alt={`Preview ${index + 1}`}
                           className="w-32 h-32 object-cover rounded-md shadow-sm hover:shadow-md transition-shadow"
                         />
@@ -344,7 +436,11 @@ export default function VendorPage() {
                     </div>
                   )}
                 </div>
-                {error && <p className="text-red-600 text-sm animate-in fade-in-50">{error}</p>}
+                {error && (
+                  <p className="text-red-600 text-sm animate-in fade-in-50">
+                    {error}
+                  </p>
+                )}
                 <div className="flex justify-end space-x-2">
                   <Button
                     type="button"
@@ -353,7 +449,14 @@ export default function VendorPage() {
                     onClick={() => {
                       setIsModalOpen(false);
                       clearError();
-                      setFormData({ name: "", price: "", description: "", category: "", stock: "", images: [] });
+                      setFormData({
+                        name: "",
+                        price: "",
+                        description: "",
+                        category: "",
+                        stock: "",
+                        images: [],
+                      });
                     }}
                   >
                     Cancel

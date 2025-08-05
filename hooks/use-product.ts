@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useProductStore } from "@/stores/product-store";
-import { apiClient, ProductData } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 
 export const useProduct = () => {
@@ -11,7 +11,7 @@ export const useProduct = () => {
   const router = useRouter();
 
   const createProductMutation = useMutation({
-    mutationFn: (data: ProductData) => apiClient.createProduct(data),
+    mutationFn: (data: FormData) => apiClient.createProduct(data),
     onMutate: () => {
       setLoading(true);
       clearError();
