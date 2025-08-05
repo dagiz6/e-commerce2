@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/auth-store";
 
 // Define the Product interface
 interface Product {
-  id: number;
+  _id: number;
   name: string;
   category: string;
   price: number;

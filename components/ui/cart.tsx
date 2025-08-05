@@ -7,7 +7,7 @@ import { Trash2, ShoppingCart } from "lucide-react";
 
 // Define the Product interface
 interface Product {
-  id: number;
+  _id: number;
   name: string;
   category: string;
   price: number;
@@ -26,7 +26,7 @@ export default function Cart({ cart, setCart }: CartProps) {
 
   const handleRemoveFromCart = (productId: number) => {
     if (cart) {
-      setCart(cart.filter((item) => item.id !== productId));
+      setCart(cart.filter((item) => item._id !== productId));
     }
   };
 
@@ -71,7 +71,7 @@ export default function Cart({ cart, setCart }: CartProps) {
               <div className="space-y-4">
                 {cart.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
@@ -90,7 +90,7 @@ export default function Cart({ cart, setCart }: CartProps) {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleRemoveFromCart(item.id)}
+                      onClick={() => handleRemoveFromCart(item._id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

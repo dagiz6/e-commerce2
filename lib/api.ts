@@ -37,12 +37,17 @@ export interface AuthResponse {
 }
 
 export interface ProductData {
+  _id: string;
   name: string;
   price: number;
   description: string;
   category: string;
   stock: number;
   images: string[];
+}
+
+export interface ProductsResponse {
+  products: ProductData[];
 }
 
 class ApiClient {
@@ -67,11 +72,11 @@ class ApiClient {
     };
 
     // Log the full request for debugging
-    console.log("API Request:", {
-      url,
-      method: config.method,
-      body: config.body,
-    });
+    // console.log("API Request:", {
+    //   url,
+    //   method: config.method,
+    //   body: config.body,
+    // });
     const response = await fetch(url, config);
 
     if (!response.ok) {
@@ -133,6 +138,11 @@ class ApiClient {
       method: "POST",
       body: data,
       headers: {},
+    });
+  }
+  async getAllProducts(): Promise<ProductsResponse> {
+    return this.request<ProductsResponse>("/products/allProducts", {
+      method: "GET",
     });
   }
 }

@@ -12,7 +12,7 @@ export interface User {
 }
 
 interface Product {
-  id: number;
+  _id: number;
   name: string;
   category: string;
   price: number;
@@ -25,7 +25,6 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-
   cart: Product[] | undefined;
 
   // Actions
