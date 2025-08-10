@@ -1,6 +1,7 @@
 "use client";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export interface SignInData {
   email: string;
@@ -11,8 +12,18 @@ export interface SignUpData {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: string; 
 }
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  otp: number;
+  newPassword: string;
+}
+
 
 export interface AuthResponse {
   user: {
@@ -20,8 +31,9 @@ export interface AuthResponse {
     email: string;
     name: string;
     role: string;
+    // avatar?: string;
   };
-  token?: string; // body token
+  token: string;
   message: string;
 }
 
@@ -49,49 +61,50 @@ class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
-  ): Promise<T & { tokenFromHeader?: string }> {
+  ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-
-    
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const config: RequestInit = {
       headers: {
-        ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
     };
 
+    // Log the full request for debugging
+    // console.log("API Request:", {
+    //   url,
+    //   method: config.method,
+    //   body: config.body,
+    // });
     const response = await fetch(url, config);
-    const tokenFromHeader = response.headers.get("Authorization") || undefined;
 
     if (!response.ok) {
+      // Enhanced error logging
+      console.error("API Error Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        url,
+      });
+
       const error = await response.json().catch(() => ({
         message: "Network error occurred",
       }));
+
+      console.error("API Error Details:", error);
       throw new Error(error.message || "Something went wrong");
     }
 
-    const data = await response.json();
-    return { ...data, tokenFromHeader };
+    return response.json();
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
-    const result = await this.request<AuthResponse>("/auth/sign-in", {
+    console.log("Sign in request data:", data)
+    return this.request<AuthResponse>("/auth/sign-in", {
       method: "POST",
       body: JSON.stringify(data),
     });
-
-    if (result.tokenFromHeader) {
-      const cleanToken = result.tokenFromHeader.replace("Bearer ", "");
-      localStorage.setItem("token", cleanToken);
-    } else if (result.token) {
-      localStorage.setItem("token", result.token);
-    }
-
-    return result;
   }
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
@@ -101,14 +114,37 @@ class ApiClient {
     });
   }
 
-  async createProduct(data: FormData): Promise<{ message: string }> {
-    return this.request<{ message: string }>("/products/createProduct", {
+  async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/auth/forgetPassword", {
       method: "POST",
-      body: data, 
-    
+      body: JSON.stringify(data),
     });
   }
 
+  async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
+    // Log what's being sent to backend
+    console.log("Reset password request data:", {
+      otp: data.otp ? "present" : "missing",
+      password: data.newPassword ? "present" : "missing",
+      otpValue: data.otp,
+    });
+
+    return this.request<{ message: string }>("/auth/resetPassword", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async createProduct(data: FormData): Promise<{ message: string }> {
+    const token = localStorage.getItem("token");
+    return this.request<{ message: string }>("/products/createProduct", {
+      method: "POST",
+      body: data,
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },  
+    });
+  }
   async getAllProducts(): Promise<ProductsResponse> {
     return this.request<ProductsResponse>("/products/allProducts", {
       method: "GET",
