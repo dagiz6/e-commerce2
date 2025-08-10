@@ -51,6 +51,7 @@
     "embla-carousel-react": "^8.3.0",
     "eslint": "8.49.0",
     "eslint-config-next": "13.5.1",
+    "google-one-tap": "^1.0.6",
     "googleapis": "^152.0.0",
     "input-otp": "^1.2.4",
     "jwt-decode": "^4.0.0",
