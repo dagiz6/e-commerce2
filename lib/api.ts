@@ -136,18 +136,32 @@ class ApiClient {
 
   async createProduct(data: FormData): Promise<{ message: string }> {
     const token = localStorage.getItem("auth-token");
-    console.log (`token : ${token}`)
+    console.log(`token : ${token}`);
     return this.request<{ message: string }>("/products/createProduct", {
       method: "POST",
       body: data,
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },  
+      },
     });
   }
   async getAllProducts(): Promise<ProductsResponse> {
     return this.request<ProductsResponse>("/products/allProducts", {
       method: "GET",
+    });
+  }
+
+  async getMyProducts(): Promise<ProductsResponse> {
+    const token = localStorage.getItem("auth-token");
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+    return this.request<ProductsResponse>("/products/myProducts", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 }

@@ -29,31 +29,58 @@ export const useProduct = () => {
     },
   });
 
-  // Fetch all products query
-const productsQuery = useQuery({
-  queryKey: ["products"],
-  queryFn: async () => {
-    const data = await apiClient.getAllProducts();
-    return data.products.map((p: any) => ({
-      _id: p._id,
-      name: p.name,
-      category: p.category,
-      price: p.price,
-      stock: p.stock || 0,
-      image: p.imageUrls?.[0] ,
-      description: p.description,
-    }));
-  },
-  staleTime: 1000 * 60 * 5,
-});
+  // All products query
+  const productsQuery = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const data = await apiClient.getAllProducts();
+      return data.products.map((p: any) => ({
+        _id: p._id,
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        stock: p.stock || 0,
+        image: p.imageUrls?.[0],
+        description: p.description,
+      }));
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // My products query
+  const myProductsQuery = useQuery({
+    
+    queryKey: ["my-products"],
+    queryFn: async () => {
+      const data = await apiClient.getMyProducts();
+      return data.products.map((p: any) => ({
+        _id: p._id,
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        stock: p.stock || 0,
+        image: p.imageUrls?.[0],
+        description: p.description,
+      }));
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   return {
+    // Create product mutation
     createProduct: createProductMutation.mutate,
     isCreatingProduct: createProductMutation.isPending,
-    isLoading: createProductMutation.isPending,
+
+    // All products
     products: productsQuery.data || [],
-    productsLoading: productsQuery.isLoading,
+    isProductsLoading: productsQuery.isLoading,
     productsError: productsQuery.error as Error | null,
     refetchProducts: productsQuery.refetch,
+
+    // My products
+    myProducts: myProductsQuery.data || [],
+    isMyProductsLoading: myProductsQuery.isLoading,
+    myProductsError: myProductsQuery.error as Error | null,
+    refetchMyProducts: myProductsQuery.refetch,
   };
 };

@@ -160,25 +160,25 @@ export default function VendorPage() {
           {[
             {
               title: "Total Products",
-              value: "156",
+              value: "0",
               icon: Package,
               color: "from-blue-500 to-blue-600",
             },
             {
               title: "Total Sales",
-              value: "12,450 ETB",
+              value: "0 ETB",
               icon: DollarSign,
               color: "from-green-500 to-green-600",
             },
             {
               title: "Orders",
-              value: "89",
+              value: "0",
               icon: TrendingUp,
               color: "from-purple-500 to-purple-600",
             },
             {
               title: "Customers",
-              value: "234",
+              value: "0",
               icon: Users,
               color: "from-orange-500 to-orange-600",
             },
@@ -220,14 +220,15 @@ export default function VendorPage() {
                 Add New Product
               </Button>
               {[
-                { text: "Manage Inventory", icon: Package },
+                { text: "Manage Inventory", icon: Package, path: "/vendor/manageProduct" },
                 { text: "View Analytics", icon: BarChart3 },
                 { text: "Customer Support", icon: Users },
-              ].map(({ text, icon: Icon }) => (
+              ].map(({ text, icon: Icon , path}) => (
                 <Button
                   key={text}
                   variant="outline"
                   className="w-full justify-start transition-all hover:shadow-md"
+                  onClick={() => path && router.push(path)}
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {text}
