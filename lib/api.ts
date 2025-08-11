@@ -100,7 +100,6 @@ class ApiClient {
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
-    console.log("Sign in request data:", data)
     return this.request<AuthResponse>("/auth/sign-in", {
       method: "POST",
       body: JSON.stringify(data),
@@ -136,7 +135,8 @@ class ApiClient {
   }
 
   async createProduct(data: FormData): Promise<{ message: string }> {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth-token");
+    console.log (`token : ${token}`)
     return this.request<{ message: string }>("/products/createProduct", {
       method: "POST",
       body: data,
