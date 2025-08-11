@@ -73,7 +73,6 @@ export const useProduct = () => {
 
     // All products
     products: productsQuery.data || [],
-    isProductsLoading: productsQuery.isLoading,
     productsError: productsQuery.error as Error | null,
     refetchProducts: productsQuery.refetch,
 
