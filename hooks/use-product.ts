@@ -75,6 +75,7 @@ export const useProduct = () => {
     products: productsQuery.data || [],
     productsError: productsQuery.error as Error | null,
     refetchProducts: productsQuery.refetch,
+    productsLoading: productsQuery.isLoading,
 
     // My products
     myProducts: myProductsQuery.data || [],
