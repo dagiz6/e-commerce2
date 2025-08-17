@@ -37,6 +37,12 @@ export interface AuthResponse {
   message: string;
 }
 
+export interface ProductImage {
+  imageUrl: string;
+  imageId: string;
+  _id: string;
+}
+
 export interface ProductData {
   _id: string;
   name: string;
@@ -44,11 +50,17 @@ export interface ProductData {
   description: string;
   category: string;
   stock: number;
-  images: string[];
+  images: ProductImage[];
 }
 
 export interface ProductsResponse {
   products: ProductData[];
+}
+
+export interface SingleProductResponse {
+  success: boolean;
+  message: string;
+  product: ProductData;
 }
 
 class ApiClient {
@@ -136,7 +148,6 @@ class ApiClient {
 
   async createProduct(data: FormData): Promise<{ message: string }> {
     const token = localStorage.getItem("auth-token");
-    console.log(`token : ${token}`);
     return this.request<{ message: string }>("/products/createProduct", {
       method: "POST",
       body: data,
@@ -163,6 +174,15 @@ class ApiClient {
         Authorization: `Bearer ${token}`,
       },
     });
+  }
+
+  async singleProduct(id: string): Promise<SingleProductResponse> {
+    return this.request<SingleProductResponse>(
+      `/products/singleProduct/${id}`,
+      {
+        method: "GET",
+      }
+    );
   }
 }
 

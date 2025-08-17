@@ -80,7 +80,8 @@ export default function ManageProduct() {
           {myProducts.map((p) => (
             <div
               key={p._id}
-              className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg hover:scale-[1.03] transition-transform p-4"
+              onClick={() => router.push(`/vendor/manageProduct/${p._id}`)}
+              className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg hover:scale-[1.03] transition-transform p-4 cursor-pointer"
             >
               {p.image ? (
                 <img

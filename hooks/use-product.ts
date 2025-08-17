@@ -40,7 +40,7 @@ export const useProduct = () => {
         category: p.category,
         price: p.price,
         stock: p.stock || 0,
-        image: p.imageUrls?.[0],
+        image: p.images?.[0]?.imageUrl,
         description: p.description,
       }));
     },
@@ -59,12 +59,33 @@ export const useProduct = () => {
         category: p.category,
         price: p.price,
         stock: p.stock || 0,
-        image: p.imageUrls?.[0],
+        image: p.images?.[0]?.imageUrl,
         description: p.description,
       }));
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  // Single product query
+  const useSingleProduct = (id: string) => {
+    return useQuery({
+      queryKey: ["single-product", id],
+      queryFn: async () => {
+        const data = await apiClient.singleProduct(id);
+        const p = data.product;
+        return {
+          _id: p._id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          stock: p.stock || 0,
+          image: p.images?.[0]?.imageUrl,
+          description: p.description,
+        };
+      },
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 
   return {
     // Create product mutation
@@ -82,5 +103,8 @@ export const useProduct = () => {
     isMyProductsLoading: myProductsQuery.isLoading,
     myProductsError: myProductsQuery.error as Error | null,
     refetchMyProducts: myProductsQuery.refetch,
+
+    // Single product
+    useSingleProduct,
   };
 };

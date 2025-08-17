@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@hookform/resolvers": "^3.9.0",
     "@next/swc-wasm-nodejs": "13.5.1",
@@ -51,12 +52,14 @@
     "embla-carousel-react": "^8.3.0",
     "eslint": "8.49.0",
     "eslint-config-next": "13.5.1",
+    "google-auth-library": "^10.2.1",
     "google-one-tap": "^1.0.6",
     "googleapis": "^152.0.0",
     "input-otp": "^1.2.4",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.446.0",
     "next": "^15.3.5",
+    "next-auth": "^4.24.11",
     "next-themes": "^0.3.0",
     "postcss": "^8.5.6",
     "react": "18.2.0",

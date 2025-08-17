@@ -100,6 +100,7 @@ export default function VendorPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-teal-100">
         <Loader2 className="h-10 w-10 animate-spin text-green-500" />
+        
       </div>
     );
   }
