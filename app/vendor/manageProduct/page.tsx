@@ -8,24 +8,27 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useEffect } from "react";
 
 
-interface AuthStore{
-    isAuthenticated: boolean,
-    user: {
-        role: string;
-    } | null;
+interface AuthStore {
+  isAuthenticated: boolean;
+  user: {
+    role: string;
+  } | null;
+  isLoading: boolean;
 }
 
 export default function ManageProduct() {
   const router = useRouter();
   const { myProducts, isMyProductsLoading, myProductsError } = useProduct();
-    const { isAuthenticated , user } = useAuthStore() as AuthStore;
+    const { isAuthenticated, user, isLoading } = useAuthStore() as AuthStore;
 
 
-      useEffect(() => {
-          if (!isAuthenticated) return router.push("/auth/sign-in");
-          if (user?.role !== "vendor") {
-            router.push(user?.role === "admin" ? "/admin" : "/dashboard");
-          }
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) return router.push("/auth/sign-in");
+      if (user?.role !== "vendor") {
+        router.push(user?.role === "admin" ? "/admin" : "/dashboard");
+      }
+    }
       }, [ isAuthenticated, user, router]);
 
 

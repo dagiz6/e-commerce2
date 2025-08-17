@@ -184,6 +184,34 @@ class ApiClient {
       }
     );
   }
+
+  async updateProduct(
+    id: string,
+    data: FormData
+  ): Promise<{ message: string }> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request<{ message: string }>(`/products/updateProduct/${id}`, {
+      method: "PATCH",
+      body: data,
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  }
+
+  async deleteProduct(id: string): Promise<{ message: string }> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request<{ message: string }>(`/products/deleteProduct/${id}`, {
+      method: "DELETE",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

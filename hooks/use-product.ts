@@ -1,14 +1,16 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useProductStore } from "@/stores/product-store";
 import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 
+
 export const useProduct = () => {
   const { setLoading, setError, clearError } = useProductStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Create product mutation
   const createProductMutation = useMutation({
@@ -20,6 +22,8 @@ export const useProduct = () => {
     onSuccess: (response) => {
       setLoading(false);
       toast.success(response.message || "Product created successfully!");
+                queryClient.invalidateQueries({ queryKey: ["products"] });
+                queryClient.invalidateQueries({ queryKey: ["my-products"] });
       router.push("/vendor");
     },
     onError: (error: Error) => {
@@ -49,7 +53,6 @@ export const useProduct = () => {
 
   // My products query
   const myProductsQuery = useQuery({
-    
     queryKey: ["my-products"],
     queryFn: async () => {
       const data = await apiClient.getMyProducts();
@@ -87,6 +90,37 @@ export const useProduct = () => {
     });
   };
 
+  // Update product mutation
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: FormData }) =>
+      apiClient.updateProduct(id, data),
+    onSuccess: (res, {id}) => {
+      toast.success(res.message || "Product updated!");
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          queryClient.invalidateQueries({ queryKey: ["my-products"] });
+          queryClient.invalidateQueries({ queryKey: ["single-product", id] });
+      router.push("/vendor");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Update failed");
+    },
+  });
+
+  // Delete product mutation
+  const deleteProductMutation = useMutation({
+    mutationFn: (id: string) => apiClient.deleteProduct(id),
+    onSuccess: (res , id) => {
+      toast.success(res.message || "Product deleted!");
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          queryClient.invalidateQueries({ queryKey: ["my-products"] });
+          queryClient.invalidateQueries({ queryKey: ["single-product", id] });
+      router.push("/vendor/manageProduct");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Delete failed");
+    },
+  });
+
   return {
     // Create product mutation
     createProduct: createProductMutation.mutate,
@@ -106,5 +140,13 @@ export const useProduct = () => {
 
     // Single product
     useSingleProduct,
+
+    // Update product
+    updateProduct: updateProductMutation.mutate,
+    isUpdatingProduct: updateProductMutation.isPending,
+
+    // Delete product
+    deleteProduct: deleteProductMutation.mutate,
+    isDeletingProduct: deleteProductMutation.isPending,
   };
 };
