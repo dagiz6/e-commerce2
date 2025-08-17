@@ -22,8 +22,7 @@ export const useProduct = () => {
     onSuccess: (response) => {
       setLoading(false);
       toast.success(response.message || "Product created successfully!");
-                queryClient.invalidateQueries({ queryKey: ["products"] });
-                queryClient.invalidateQueries({ queryKey: ["my-products"] });
+      window.location.reload();
       router.push("/vendor");
     },
     onError: (error: Error) => {
@@ -99,7 +98,7 @@ export const useProduct = () => {
           queryClient.invalidateQueries({ queryKey: ["products"] });
           queryClient.invalidateQueries({ queryKey: ["my-products"] });
           queryClient.invalidateQueries({ queryKey: ["single-product", id] });
-      router.push("/vendor");
+      router.push("/vendor/manageProduct");
     },
     onError: (err: Error) => {
       toast.error(err.message || "Update failed");
