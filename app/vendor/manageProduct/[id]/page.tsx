@@ -1,11 +1,12 @@
+
 import SingleProductPage from "./SingleProductPage";
 
-export const revalidate = 3600; // ISR: Revalidate every hour
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/allProducts`,
-    { next: { revalidate: 3600 } } // Cache the fetch request
+    { next: { revalidate: 3600 } }
   );
   const data = await res.json();
   return data.products.map((p: any) => ({
@@ -13,7 +14,11 @@ export async function generateStaticParams() {
   }));
 }
 
-// Corrected component - params is already resolved by Next.js
-export default function Page({ params }: { params: { id: string } }) {
-  return <SingleProductPage productId={params.id} />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params; // Await the params promise
+  return <SingleProductPage productId={resolvedParams.id} />;
 }
