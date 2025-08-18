@@ -5,7 +5,8 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/allProducts`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/allProducts`,
+    { next: { revalidate: 3600 } }
   );
   const data = await res.json();
   return data.products.map((p: any) => ({
