@@ -34,7 +34,6 @@ export default function SingleProductPage({ productId }: { productId: string }) 
   const handleDeleteConfirm = () => {
     deleteProduct(product._id);
     setShowDeleteConfirm(false);
-    router.push("/vendor");
   };
 
   return (

@@ -280,7 +280,8 @@ export default function DashboardPage() {
                 filteredProducts.map((product) => (
                   <Card
                     key={product._id}
-                    className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow"
+                    onClick={() => router.push(`/dashboard/${product._id}`)}
+                    className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-shadow cursor-pointer"
                   >
                     <CardContent className="p-3 sm:p-4">
                       <div className="w-full h-48 overflow-hidden rounded-md bg-gray-100 flex items-center justify-center">
@@ -312,7 +313,9 @@ export default function DashboardPage() {
                           onClick={() => handleAddToCart(product)}
                           disabled={isProductInCart(product._id)}
                         >
-                          {isProductInCart(product._id) ? "Added" : "Add to Cart"}
+                          {isProductInCart(product._id)
+                            ? "Added"
+                            : "Add to Cart"}
                         </Button>
                       </div>
                     </CardContent>
