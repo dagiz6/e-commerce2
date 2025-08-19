@@ -177,7 +177,7 @@ export default function SingleProductPage({ productId }: { productId: string }) 
             <Card
               key={p._id}
               className="shadow-md border-0 bg-white/90 hover:shadow-lg transition cursor-pointer"
-              onClick={() => router.push(`/product/${p._id}`)}
+              onClick={() => router.push(`/dashboard/${p._id}`)}
             >
               <CardContent className="p-3">
                 {p.image ? (
@@ -211,7 +211,7 @@ export default function SingleProductPage({ productId }: { productId: string }) 
               <Card
                 key={p._id}
                 className="shadow-md border-0 bg-white/90 hover:shadow-lg transition cursor-pointer"
-                onClick={() => router.push(`/product/${p._id}`)}
+                onClick={() => router.push(`/dashboard/${p._id}`)}
               >
                 <CardContent className="p-3">
                   {p.image ? (
