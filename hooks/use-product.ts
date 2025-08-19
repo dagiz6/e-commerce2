@@ -120,6 +120,36 @@ export const useProduct = () => {
     },
   });
 
+const useRelatedProducts = (category: string, excludeId: string) => {
+  return useQuery({
+    queryKey: ["related-products", category, excludeId],
+    queryFn: async () => {
+      const data = await apiClient.getAllProducts();
+
+      // filter same category & exclude current product
+      const related = data.products
+        .filter((p: any) => p.category === category && p._id !== excludeId)
+        .map((p: any) => ({
+          _id: p._id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+          stock: p.stock || 0,
+          image: p.images?.[0]?.imageUrl,
+          description: p.description,
+        }));
+
+      // shuffle randomly
+      const shuffled = related.sort(() => Math.random() - 0.5);
+
+      // return only first 8
+      return shuffled.slice(0, 8);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+
   return {
     // Create product mutation
     createProduct: createProductMutation.mutate,
@@ -147,5 +177,8 @@ export const useProduct = () => {
     // Delete product
     deleteProduct: deleteProductMutation.mutate,
     isDeletingProduct: deleteProductMutation.isPending,
+
+    // Related products
+    useRelatedProducts,
   };
 };
