@@ -94,17 +94,17 @@ class ApiClient {
 
     if (!response.ok) {
       // Enhanced error logging
-      console.error("API Error Response:", {
-        status: response.status,
-        statusText: response.statusText,
-        url,
-      });
+      // console.error("API Error Response:", {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   url,
+      // });
 
       const error = await response.json().catch(() => ({
         message: "Network error occurred",
       }));
 
-      console.error("API Error Details:", error);
+      // console.error("API Error Details:", error);
       throw new Error(error.message || "Something went wrong");
     }
 
@@ -208,6 +208,24 @@ class ApiClient {
     return this.request<{ message: string }>(`/products/deleteProduct/${id}`, {
       method: "DELETE",
       headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  }
+
+  async ratingProduct(
+    id: string,
+    rating: number,
+    review?: string,
+  ): Promise<{ message: string }> { 
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request<{ message: string }>(`/products/rating/${id}`, {
+      method: "POST",
+      body: JSON.stringify({ rating , review }),
+      headers: {
+        "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });

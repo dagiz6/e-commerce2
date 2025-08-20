@@ -178,6 +178,26 @@ const useRelatedProducts = (category: string, excludeId: string) => {
     });
   };
 
+  const rateProductMutation = useMutation({
+    mutationFn: ({
+      id,
+      rating,
+      review,
+    }: {
+      id: string;
+      rating: number;
+      review: string;
+    }) => apiClient.ratingProduct(id, rating, review),
+    onSuccess: (res) => {
+      toast.success(res.message || "Review submitted!");
+      // optional: invalidate related queries if you want to refresh product data
+      // queryClient.invalidateQueries({ queryKey: ["single-product", id] });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to submit review");
+    },
+  });
+
 
   return {
     // Create product mutation
@@ -210,5 +230,9 @@ const useRelatedProducts = (category: string, excludeId: string) => {
     // Related products and other products
     useRelatedProducts,
     useOtherProducts,
+
+    // Rate product
+    rateProduct: rateProductMutation.mutate,
+    isRatingProduct: rateProductMutation.isPending,
   };
 };
