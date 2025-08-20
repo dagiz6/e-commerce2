@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DashboardClientLayout from "./client-layout";
 
 export const metadata: Metadata = {
   title: "Dashboard - ShopHub",
@@ -10,5 +11,5 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <DashboardClientLayout>{children}</DashboardClientLayout>;
 }

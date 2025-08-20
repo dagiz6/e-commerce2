@@ -147,7 +147,36 @@ const useRelatedProducts = (category: string, excludeId: string) => {
     },
     staleTime: 1000 * 60 * 5,
   });
-};
+  };
+  
+  const useOtherProducts = (excludeId: string) => {
+    return useQuery({
+      queryKey: ["other-products", excludeId],
+      queryFn: async () => {
+        const data = await apiClient.getAllProducts();
+
+        // filter out current product
+        const others = data.products
+          .filter((p: any) => p._id !== excludeId)
+          .map((p: any) => ({
+            _id: p._id,
+            name: p.name,
+            category: p.category,
+            price: p.price,
+            stock: p.stock || 0,
+            image: p.images?.[0]?.imageUrl,
+            description: p.description,
+          }));
+
+        // shuffle randomly
+        const shuffled = others.sort(() => Math.random() - 0.5);
+
+        // return only first 16
+        return shuffled.slice(0, 16);
+      },
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 
 
   return {
@@ -178,7 +207,8 @@ const useRelatedProducts = (category: string, excludeId: string) => {
     deleteProduct: deleteProductMutation.mutate,
     isDeletingProduct: deleteProductMutation.isPending,
 
-    // Related products
+    // Related products and other products
     useRelatedProducts,
+    useOtherProducts,
   };
 };

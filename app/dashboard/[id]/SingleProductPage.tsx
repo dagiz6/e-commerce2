@@ -9,7 +9,7 @@ import { ShoppingCart, Star } from "lucide-react";
 
 export default function SingleProductPage({ productId }: { productId: string }) {
   const router = useRouter();
-  const { useSingleProduct, useRelatedProducts, products, productsLoading } = useProduct();
+  const { useSingleProduct, useRelatedProducts, useOtherProducts, products, productsLoading } = useProduct();
 
   // Single Product
   const { data: product, isLoading, error } = useSingleProduct(productId);
@@ -17,6 +17,9 @@ export default function SingleProductPage({ productId }: { productId: string }) 
   // Related Products → only fetch when we have product
   const { data: relatedProducts, isLoading: relatedLoading } =
     useRelatedProducts(product?.category || "", product?._id || "");
+  
+  const { data: otherProducts , isLoading : otherLoading} = useOtherProducts(product?._id ?? "");
+  
 
   const [quantity, setQuantity] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<"overview" | "reviews">("overview");
@@ -202,32 +205,30 @@ export default function SingleProductPage({ productId }: { productId: string }) 
         Other Products
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {productsLoading ? (
+        {otherLoading ? (
           <p>Loading products...</p>
         ) : (
-          products
-            .filter((p: any) => p._id !== product._id) // exclude current
-            .map((p: any) => (
-              <Card
-                key={p._id}
-                className="shadow-md border-0 bg-white/90 hover:shadow-lg transition cursor-pointer"
-                onClick={() => router.push(`/dashboard/${p._id}`)}
-              >
-                <CardContent className="p-3">
-                  {p.image ? (
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="h-40 w-full object-cover rounded-md mb-2"
-                    />
-                  ) : (
-                    <div className="h-40 bg-gray-100 rounded-md mb-2" />
-                  )}
-                  <p className="font-medium text-gray-900">{p.name}</p>
-                  <p className="text-sm text-gray-600">{p.price} ETB</p>
-                </CardContent>
-              </Card>
-            ))
+          otherProducts?.map((p: any) => (
+            <Card
+              key={p._id}
+              className="shadow-md border-0 bg-white/90 hover:shadow-lg transition cursor-pointer"
+              onClick={() => router.push(`/dashboard/${p._id}`)}
+            >
+              <CardContent className="p-3">
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="h-40 w-full object-cover rounded-md mb-2"
+                  />
+                ) : (
+                  <div className="h-40 bg-gray-100 rounded-md mb-2" />
+                )}
+                <p className="font-medium text-gray-900">{p.name}</p>
+                <p className="text-sm text-gray-600">{p.price} ETB</p>
+              </CardContent>
+            </Card>
+          ))
         )}
       </div>
     </div>
