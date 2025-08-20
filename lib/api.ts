@@ -51,16 +51,25 @@ export interface ProductData {
   category: string;
   stock: number;
   images: ProductImage[];
+  averageRating?: number;
+  totalRating?: number;
 }
 
 export interface ProductsResponse {
   products: ProductData[];
 }
 
+export interface Rating {
+  name: string;
+  rating: number;
+  review?: string;
+}
+
 export interface SingleProductResponse {
   success: boolean;
   message: string;
   product: ProductData;
+  rating: Rating[];
 }
 
 class ApiClient {

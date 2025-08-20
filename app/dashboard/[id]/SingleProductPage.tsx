@@ -71,7 +71,7 @@ export default function SingleProductPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left: Image + Actions */}
-        <div className="lg:col-span-2 bg-white/95 p-6 rounded-lg shadow-lg flex flex-col items-center">
+        <div className="lg:col-span-2 bg-white/95 p-6 rounded-lg shadow-lg flex flex-col items-center h-fit">
           {product.image && (
             <img
               src={product.image}
@@ -129,13 +129,20 @@ export default function SingleProductPage({
 
             {/* Rating placeholder */}
             <div className="flex items-center space-x-2 mt-4">
-              {[1, 2, 3, 4, 5].map((s) => (
+              {[1, 2, 3, 4, 5].map((star) => (
                 <Star
-                  key={s}
-                  className="h-5 w-5 text-yellow-400 fill-yellow-400"
+                  key={star}
+                  className={`h-5 w-5 ${
+                    star <= product.averageRating
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300"
+                  }`}
                 />
               ))}
-              <span className="text-gray-600 text-sm">(Reviews)</span>
+              <span className="text-gray-600 text-sm">
+                ({product.totalRating} rating
+                {product.totalRating > 1 ? "s" : ""})
+              </span>
             </div>
           </Card>
 
@@ -204,9 +211,38 @@ export default function SingleProductPage({
                   </div>
 
                   {/* Existing reviews placeholder (optional) */}
-                  <p className="text-gray-700">
-                    User reviews will appear here...
-                  </p>
+                  {product.reviews.length === 0 ? (
+                    <p className="text-gray-700">No reviews yet.</p>
+                  ) : (
+                    <div className="space-y-4 max-h-64 overflow-y-auto">
+                      {product.reviews.map((rev: any) => (
+                        <div
+                          key={rev._id}
+                          className="p-3 border rounded-lg bg-gray-50"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-semibold">
+                              {rev.name || `User ${rev._id.slice(-5)}`}
+                            </p>
+                            <div className="flex gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  size={16}
+                                  className={
+                                    star <= rev.rating
+                                      ? "text-yellow-400 fill-yellow-400"
+                                      : "text-gray-300"
+                                  }
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <p>{rev.review}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

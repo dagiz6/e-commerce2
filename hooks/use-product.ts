@@ -83,6 +83,9 @@ export const useProduct = () => {
           stock: p.stock || 0,
           image: p.images?.[0]?.imageUrl,
           description: p.description,
+          averageRating: p.averageRating || 0,
+          totalRating: p.totalRating || 0,
+          reviews: data.rating || [],
         };
       },
       staleTime: 1000 * 60 * 5,
@@ -188,10 +191,10 @@ const useRelatedProducts = (category: string, excludeId: string) => {
       rating: number;
       review: string;
     }) => apiClient.ratingProduct(id, rating, review),
-    onSuccess: (res) => {
+    onSuccess: (res, id) => {
       toast.success(res.message || "Review submitted!");
       // optional: invalidate related queries if you want to refresh product data
-      // queryClient.invalidateQueries({ queryKey: ["single-product", id] });
+      queryClient.invalidateQueries({ queryKey: ["single-product", id] });
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to submit review");
