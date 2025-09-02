@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +12,12 @@ import {
 } from "@/components/ui/card";
 import { Filter } from "lucide-react";
 import { useProduct } from "@/hooks/use-product";
+import { useCart } from "@/hooks/use-cart";
+import { useAuthStore } from "@/stores/auth-store";
 
-// Define the Product interface
+// Product interface
 interface Product {
-  _id: number;
+  _id: string;
   name: string;
   category: string;
   price: number;
@@ -24,29 +25,29 @@ interface Product {
   image: string;
 }
 
-// Define the AuthStore interface
+// AuthStore interface
 interface AuthStore {
   user: { name: string; email: string; role: string } | null;
-  cart: Product[] | undefined;
-  setCart: (cart: Product[] | undefined) => void;
 }
 
 export default function DashboardPage() {
-  const { user, cart, setCart } = useAuthStore() as AuthStore;
+  const { user } = useAuthStore() as AuthStore;
   const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
-  // Use the useProduct hook
+  // Products
   const { products, productsLoading, productsError, refetchProducts } =
     useProduct();
 
+  // Cart hook
+  const { cart, addToCart } = useCart();
+
+  // Handle add to cart using your cart hook
   const handleAddToCart = (product: Product) => {
-    if (cart) {
-      setCart([...cart, product]);
-    } else {
-      setCart([product]);
+    if (!cart?.some((item) => item.productId === product._id)) {
+      addToCart([{ productId: product._id, quantity: 1 }]);
     }
   };
 
@@ -58,7 +59,7 @@ export default function DashboardPage() {
     "Accessories",
   ];
 
-  // Filter products based on selected category and search query
+  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === "All" || product.category === selectedCategory;
@@ -68,19 +69,10 @@ export default function DashboardPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Check if a product is in the cart
-  const isProductInCart = (productId: number): boolean => {
-    return cart ? cart.some((item) => item._id === productId) : false;
-  };
-
   return (
     <div className="flex flex-col sm:flex-row">
-      {/* Categories Sidebar */}
-      <aside
-        className={`w-full sm:w-64 sm:mr-8 ${
-          isSidebarOpen ? "block" : "hidden sm:block"
-        }`}
-      >
+      {/* Sidebar */}
+      <aside className="w-full sm:w-64 sm:mr-8">
         <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">
@@ -95,10 +87,7 @@ export default function DashboardPage() {
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    setIsSidebarOpen(false); // Close sidebar on mobile
-                  }}
+                  onClick={() => setSelectedCategory(category)}
                   className={`w-full text-left px-4 py-2 rounded-md text-sm sm:text-base ${
                     selectedCategory === category
                       ? "bg-purple-100 text-purple-600"
@@ -106,7 +95,6 @@ export default function DashboardPage() {
                   }`}
                 >
                   {category}
-                  
                 </button>
               ))}
             </div>
@@ -186,16 +174,22 @@ export default function DashboardPage() {
                         {product.stock}
                       </span>
                     </p>
-
                     <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1 sm:mt-2">
                       {product.price.toFixed(2)} ETB
                     </p>
                     <Button
                       className="mt-3 sm:mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs sm:text-sm py-1 sm:py-2"
-                      onClick={() => handleAddToCart(product)}
-                      disabled={isProductInCart(product._id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // <-- Prevents navigating to single product
+                        handleAddToCart(product);
+                      }}
+                      disabled={cart?.some(
+                        (item) => item.productId === product._id
+                      )}
                     >
-                      {isProductInCart(product._id) ? "Added" : "Add to Cart"}
+                      {cart?.some((item) => item.productId === product._id)
+                        ? "Added"
+                        : "Add to Cart"}
                     </Button>
                   </div>
                 </CardContent>

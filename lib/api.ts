@@ -72,6 +72,26 @@ export interface SingleProductResponse {
   rating: Rating[];
 }
 
+export interface CartProduct {
+  productId: string;
+  quantity: number;
+  _id?: string;
+}
+
+export interface UsersCart {
+  _id: string;
+  userId: string;
+  products: CartProduct[];
+  totalItems: number;
+  __v?: number;
+}
+
+export interface CartResponse {
+  success: boolean;
+  message: string;
+  cart: UsersCart;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -174,6 +194,8 @@ class ApiClient {
   async getMyProducts(): Promise<ProductsResponse> {
     const token = localStorage.getItem("auth-token");
 
+    console.log("Auth Token:", token); // Debugging line
+
     if (!token) {
       throw new Error("No authentication token found");
     }
@@ -225,20 +247,75 @@ class ApiClient {
   async ratingProduct(
     id: string,
     rating: number,
-    review?: string,
-  ): Promise<{ message: string }> { 
+    review?: string
+  ): Promise<{ message: string }> {
     const token = localStorage.getItem("auth-token");
     if (!token) throw new Error("No authentication token found");
 
     return this.request<{ message: string }>(`/products/rating/${id}`, {
       method: "POST",
-      body: JSON.stringify({ rating , review }),
+      body: JSON.stringify({ rating, review }),
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
   }
+
+  async addToCart(
+    products: { productId: string; quantity: number }[]
+  ): Promise<CartResponse> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request<CartResponse>(`/cart/addToCart`, {
+      method: "POST",
+      body: JSON.stringify({ products }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async updateCart(
+    products: { productId: string; quantity: number }[]
+  ): Promise<CartResponse> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request<CartResponse>(`/cart/updateCart`, {
+      method: "PATCH",
+      body: JSON.stringify({ products }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getMyCart(): Promise<{
+    success: boolean;
+    message: string;
+    cart: {
+      _id: string;
+      userId: string;
+      products: { productId: string; quantity: number; _id: string }[];
+      totalItems: number;
+    };
+  }> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request(`/cart/mycart`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

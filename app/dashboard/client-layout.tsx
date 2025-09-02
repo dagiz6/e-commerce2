@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
+import { useCartStore } from "@/stores/cart-store"; // <-- use cart store
 import { Button } from "@/components/ui/button";
 import {
   User,
@@ -19,7 +20,6 @@ interface AuthStore {
   isLoading: boolean;
   user: { name: string; email: string; role: string } | null;
   logout: () => void;
-  cart: any[] | undefined;
 }
 
 export default function DashboardClientLayout({
@@ -27,8 +27,9 @@ export default function DashboardClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, isLoading, logout, cart } =
+  const { isAuthenticated, user, isLoading, logout } =
     useAuthStore() as AuthStore;
+  const cart = useCartStore((state) => state.cart); // <-- reactive cart
   const router = useRouter();
 
   useEffect(() => {
@@ -63,6 +64,8 @@ export default function DashboardClientLayout({
     return null;
   }
 
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       {/* Header */}
@@ -72,7 +75,7 @@ export default function DashboardClientLayout({
             <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 className="sm:hidden"
-                onClick={() => {} /* Sidebar toggle logic can be added later */}
+                onClick={() => {} /* Sidebar toggle logic */}
               >
                 <Menu className="h-6 w-6 text-gray-700" />
               </button>
@@ -93,6 +96,7 @@ export default function DashboardClientLayout({
                 />
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               </div>
+
               <div className="relative">
                 <Button
                   variant="outline"
@@ -102,13 +106,14 @@ export default function DashboardClientLayout({
                 >
                   <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Cart
-                  {cart && cart.length > 0 && (
+                  {totalItems > 0 && (
                     <span className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
-                      {cart.length}
+                      {totalItems}
                     </span>
                   )}
                 </Button>
               </div>
+
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
                   <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
@@ -117,6 +122,7 @@ export default function DashboardClientLayout({
                   {user.name}
                 </span>
               </div>
+
               <Button
                 onClick={handleLogout}
                 variant="outline"

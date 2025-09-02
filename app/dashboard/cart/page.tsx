@@ -2,33 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Cart from "@/components/ui/cart"; // Adjust path to your Cart component
+import Cart from "@/components/ui/cart";
 import { useAuthStore } from "@/stores/auth-store";
 
-// Define the Product interface
-interface Product {
-  _id: number;
-  name: string;
-  category: string;
-  price: number;
-  rating: number;
-  image: string;
-}
-
-// Define the AuthStore interface
-interface AuthStore {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  user: { name: string; email: string; role: string } | null;
-  logout: () => void;
-  cart: Product[] | undefined;
-  setCart: React.Dispatch<React.SetStateAction<Product[] | undefined>>;
-}
-
-// Define the CartPage component
 const CartPage: React.FC = () => {
-  const { isAuthenticated, isLoading, user, cart, setCart } =
-    useAuthStore() as AuthStore;
+  const { isAuthenticated, isLoading, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,11 +23,9 @@ const CartPage: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated || !user) {
-    return null;
-  }
+  if (!isAuthenticated || !user) return null;
 
-  return <Cart cart={cart || []} setCart={setCart} />;
+  return <Cart />;
 };
 
 export default CartPage;

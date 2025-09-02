@@ -3,36 +3,87 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, ShoppingCart } from "lucide-react";
+import { Trash2, ShoppingCart, Plus, Minus } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
+import { apiClient } from "@/lib/api";
+import { useState, useEffect } from "react";
 
-// Define the Product interface
 interface Product {
-  _id: number;
+  _id: string;
   name: string;
-  category: string;
   price: number;
-  rating: number;
-  image: string;
+  quantity: number;
+  image?: string;
 }
 
-// Define the props interface for the Cart component
-interface CartProps {
-  cart: Product[] | undefined;
-  setCart: React.Dispatch<React.SetStateAction<Product[] | undefined>>;
-}
-
-export default function Cart({ cart, setCart }: CartProps) {
+export default function Cart() {
   const router = useRouter();
+  const { cart: storeCart, updateCart } = useCart();
+  const [localCart, setLocalCart] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleRemoveFromCart = (productId: number) => {
-    if (cart) {
-      setCart(cart.filter((item) => item._id !== productId));
-    }
+  // Fetch product details from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const results = await Promise.all(
+          storeCart.map(async (item) => {
+            const data = await apiClient.singleProduct(item.productId);
+            return {
+              _id: item.productId,
+              name: data.product.name,
+              price: data.product.price,
+              quantity: item.quantity,
+              image: data.product.images?.[0]?.imageUrl,
+            };
+          })
+        );
+        setLocalCart(results);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [storeCart]);
+
+  const handleQuantityChange = (productId: string, newQty: number) => {
+    setLocalCart((prev) =>
+      prev.map((item) =>
+        item._id === productId ? { ...item, quantity: newQty } : item
+      )
+    );
   };
 
-  const totalPrice = cart
-    ? cart.reduce((total, item) => total + item.price, 0)
-    : 0;
+  const handleRemove = (productId: string) => {
+    setLocalCart((prev) => prev.filter((item) => item._id !== productId));
+  };
+
+  const handleProceedToCheckout = () => {
+    // Prepare data for API
+    const updatedProducts = localCart.map((item) => ({
+      productId: item._id,
+      quantity: item.quantity,
+    }));
+
+    // Call API once
+    updateCart(updatedProducts);
+  };
+
+  const totalPrice = localCart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <p className="text-gray-600">Loading cart...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
@@ -65,11 +116,11 @@ export default function Cart({ cart, setCart }: CartProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {!cart || cart.length === 0 ? (
+            {localCart.length === 0 ? (
               <p className="text-gray-600 text-center">Your cart is empty.</p>
             ) : (
               <div className="space-y-4">
-                {cart.map((item) => (
+                {localCart.map((item) => (
                   <div
                     key={item._id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
@@ -85,15 +136,41 @@ export default function Cart({ cart, setCart }: CartProps) {
                         <p className="text-sm text-gray-600">
                           {item.price.toFixed(2)} ETB
                         </p>
+                        <div className="flex items-center mt-1 space-x-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                              handleQuantityChange(item._id, item.quantity - 1)
+                            }
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="px-2">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                              handleQuantityChange(item._id, item.quantity + 1)
+                            }
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleRemoveFromCart(item._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center space-x-4">
+                      <p className="font-semibold">
+                        {(item.price * item.quantity).toFixed(2)} ETB
+                      </p>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleRemove(item._id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 <div className="flex justify-between border-t border-gray-200 pt-4">
@@ -102,7 +179,10 @@ export default function Cart({ cart, setCart }: CartProps) {
                     {totalPrice.toFixed(2)} ETB
                   </p>
                 </div>
-                <Button className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                <Button
+                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                  onClick={handleProceedToCheckout}
+                >
                   Proceed to Checkout
                 </Button>
               </div>
