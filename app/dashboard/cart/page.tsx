@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Cart from "@/components/ui/cart";
 import { useAuthStore } from "@/stores/auth-store";
 
-const CartPage = (): JSX.Element => {
+export default function CartPage() {
   const { isAuthenticated, isLoading, user } = useAuthStore();
   const router = useRouter();
 
@@ -23,9 +23,7 @@ const CartPage = (): JSX.Element => {
     );
   }
 
-  if (!isAuthenticated || !user) return <></>;
+  if (!isAuthenticated || !user) return null;
 
   return <Cart />;
-};
-
-export default CartPage;
+}
