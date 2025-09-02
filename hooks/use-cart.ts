@@ -4,13 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useCartStore } from "@/stores/cart-store";
 import { toast } from "sonner";
-import { UsersCart } from "@/lib/api";
 
+// Main hook for cart
 export const useCart = () => {
   const queryClient = useQueryClient();
   const { setCart, setLoading, setError, clearError } = useCartStore();
 
-  // ✅ Fetch my cart
+  //  Fetch my cart
   const myCartQuery = useQuery({
     queryKey: ["my-cart"],
     queryFn: async () => {
@@ -30,7 +30,7 @@ export const useCart = () => {
     staleTime: 1000 * 60 * 2,
   });
 
-  // ✅ Add to cart
+  //  Add to cart
   const addToCartMutation = useMutation({
     mutationFn: (products: { productId: string; quantity: number }[]) =>
       apiClient.addToCart(products),
@@ -43,7 +43,7 @@ export const useCart = () => {
     },
   });
 
-  // ✅ Update cart
+  // Update cart
   const updateCartMutation = useMutation({
     mutationFn: (products: { productId: string; quantity: number }[]) =>
       apiClient.updateCart(products),
@@ -57,13 +57,13 @@ export const useCart = () => {
   });
 
   return {
-    // Cart
+    // Cart data
     myCart: myCartQuery.data,
     isMyCartLoading: myCartQuery.isLoading,
     myCartError: myCartQuery.error as Error | null,
     refetchMyCart: myCartQuery.refetch,
 
-    // Zustand
+    // Zustand cart
     cart: useCartStore((state) => state.cart),
 
     // Mutations
@@ -73,4 +73,10 @@ export const useCart = () => {
     updateCart: updateCartMutation.mutate,
     isUpdatingCart: updateCartMutation.isPending,
   };
+};
+
+// Optional small wrapper for addToCart only
+export const useAddToCart = () => {
+  const { addToCart, isAddingToCart } = useCart();
+  return { addToCart, isAddingToCart };
 };
