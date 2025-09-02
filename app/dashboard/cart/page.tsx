@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Cart from "@/components/ui/cart";
 import { useAuthStore } from "@/stores/auth-store";
 
-const CartPage: React.FC = () => {
+const CartPage = (): JSX.Element => {
   const { isAuthenticated, isLoading, user } = useAuthStore();
   const router = useRouter();
 
@@ -23,7 +23,7 @@ const CartPage: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated || !user) return null;
+  if (!isAuthenticated || !user) return <></>;
 
   return <Cart />;
 };
