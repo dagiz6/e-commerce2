@@ -14,6 +14,7 @@ import {
   Menu,
 } from "lucide-react";
 
+
 // Define the AuthStore interface
 interface AuthStore {
   isAuthenticated: boolean;
@@ -31,6 +32,8 @@ export default function DashboardClientLayout({
     useAuthStore() as AuthStore;
   const cart = useCartStore((state) => state.cart); // <-- reactive cart
   const router = useRouter();
+  const fetchCart = useCartStore((state) => state.fetchCart);
+
 
   useEffect(() => {
     if (!isLoading) {
@@ -45,6 +48,12 @@ export default function DashboardClientLayout({
       }
     }
   }, [isLoading, isAuthenticated, user, router]);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user?.role === "user") {
+      fetchCart(); //  refresh from backend when dashboard loads
+    }
+  }, [isLoading, isAuthenticated, user, fetchCart]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth-token");

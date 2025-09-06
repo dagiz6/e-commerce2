@@ -315,7 +315,37 @@ class ApiClient {
     });
   }
 
-  
+  async createOrder(data: {
+    items: { productId: string; quantity: number }[];
+    phoneNumber: string;
+    address: string;
+  }): Promise<any> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request(`/order/createOrder`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  async initiatePayment(orderId: string): Promise<any> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request(`/order/initiatePayment`, {
+      method: "POST",
+      body: JSON.stringify({ orderId }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

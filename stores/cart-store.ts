@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { apiClient } from "@/lib/api";
 
 // Define cart item shape
 interface CartItem {
@@ -23,6 +24,8 @@ interface CartState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+
+  fetchCart: () => Promise<void>; //  added
 }
 
 export const useCartStore = create<CartState>((set) => ({
@@ -50,4 +53,19 @@ export const useCartStore = create<CartState>((set) => ({
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+
+  //  Fetch from backend
+  fetchCart: async () => {
+    set({ isLoading: true });
+    try {
+      const response = await apiClient.getMyCart();
+      // Response shape: { success, message, cart: { products: [] } }
+      set({ cart: response.cart.products, isLoading: false });
+    } catch (err: any) {
+      set({
+        error: err.message || "Failed to fetch cart",
+        isLoading: false,
+      });
+    }
+  },
 }));
