@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Star } from "lucide-react";
 import { useProduct } from "@/hooks/use-product";
+import { useCartStore } from "@/stores/cart-store"; 
+import { toast } from "sonner";
+import CheckoutForm from "@/components/ui/check-out-form";
 
 export default function SingleProductPage({
   productId,
@@ -31,6 +34,21 @@ export default function SingleProductPage({
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState("");
   const [warning, setWarning] = useState("");
+  const cart = useCartStore((state) => state.cart);
+  const isInCart = cart.some((item) => item.productId === product?._id);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const checkoutItem = product
+    ? [
+        {
+          productId: product._id,
+          name: product.name,
+          quantity,
+          price: product.price,
+        },
+      ]
+    : [];
+  const total = product ? product.price * quantity : 0;
+
 
   // Related & Other products
   const { data: relatedProducts } = useRelatedProducts(
@@ -49,10 +67,21 @@ export default function SingleProductPage({
       </div>
     );
 
-  const handleAddToCart = () =>
-    console.log("Added to cart:", product, "Qty:", quantity);
-  const handleBuyNow = () =>
-    console.log("Buy Now clicked:", product, "Qty:", quantity);
+const handleAddToCart = () => {
+  if (!isInCart) {
+    useCartStore.getState().addItem({
+      productId: product._id,
+      quantity,
+    });
+    toast.success(`${product.name} added to cart!`);
+  }
+};
+  
+const handleBuyNow = () => {
+  if (!product) return;
+  setShowCheckout(true);
+};
+
 
   const handleSubmitReview = () => {
     if (!userRating)
@@ -100,10 +129,16 @@ export default function SingleProductPage({
 
           <div className="flex space-x-4 w-full">
             <Button
-              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+              className={`flex-1 text-white w-full py-1 sm:py-2 text-xs sm:text-sm rounded-md transition-all duration-200 ${
+                isInCart
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 opacity-70 cursor-not-allowed backdrop-blur-sm"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90"
+              }`}
               onClick={handleAddToCart}
+              disabled={isInCart}
             >
-              <ShoppingCart className="h-4 w-4 mr-2" /> Add to Cart
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              {isInCart ? "Added" : "Add to Cart"}
             </Button>
             <Button
               className="flex-1 bg-purple-700 hover:bg-purple-800 text-white"
@@ -111,6 +146,13 @@ export default function SingleProductPage({
             >
               Buy Now
             </Button>
+            {showCheckout && (
+              <CheckoutForm
+                items={checkoutItem}
+                total={total}
+                onClose={() => setShowCheckout(false)}
+              />
+            )}
           </div>
         </div>
 

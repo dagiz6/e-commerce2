@@ -23,7 +23,8 @@ export default function CheckoutForm({
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const clearCart = useCartStore((state) => state.clearCart);
+  const clearCart = useCartStore((state) => state.clearCart);
+  
     
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
