@@ -22,12 +22,22 @@ export default function CheckoutForm({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState<string | null>(null);
     const router = useRouter();
   const clearCart = useCartStore((state) => state.clearCart);
   
+    const isValidEthiopianPhone = (phone: string) => {
+      const pattern = /^(?:\+2519\d{8}|09\d{8}|07\d{8}|011\d{6})$/;
+      return pattern.test(phone);
+    };
     
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+      if (!isValidEthiopianPhone(phoneNumber)) {
+        setError("Please enter a valid Ethiopian phone number.");
+        return;
+      }
+      setError(null);
   setLoading(true);
 
   try {
@@ -42,7 +52,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const orderId = response.order.orderId;
 
-    // ✅ Clear cart immediately when order is confirmed
+    //  Clear cart immediately when order is confirmed
     await apiClient.updateCart([]);
     clearCart();
 
@@ -95,7 +105,11 @@ const handleSubmit = async (e: React.FormEvent) => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
+              className={error ? "border-red-500" : ""}
             />
+            {error && (
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+            )}
             <Input
               type="text"
               placeholder="Delivery Address"
