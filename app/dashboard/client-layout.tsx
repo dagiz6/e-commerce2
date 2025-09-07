@@ -97,14 +97,6 @@ export default function DashboardClientLayout({
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="relative w-24 sm:w-40 md:w-48">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-8 pr-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              </div>
 
               <div className="relative">
                 <Button

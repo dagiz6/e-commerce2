@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Filter } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { useProduct } from "@/hooks/use-product";
 import { useCart } from "@/hooks/use-cart";
 import { useAuthStore } from "@/stores/auth-store";
@@ -44,7 +44,7 @@ export default function DashboardPage() {
   // Cart hook
   const { cart, addToCart } = useCart();
 
-  // Handle add to cart using your cart hook
+  // Handle add to cart
   const handleAddToCart = (product: Product) => {
     if (!cart?.some((item) => item.productId === product._id)) {
       addToCart([{ productId: product._id, quantity: 1 }]);
@@ -104,26 +104,44 @@ export default function DashboardPage() {
 
       {/* Product Grid */}
       <div className="flex-1 mt-6 sm:mt-0">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Welcome back, {user?.name}!
           </h2>
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
-            <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border-gray-300 rounded-md p-1 sm:p-2 text-sm sm:text-base text-gray-700 w-full sm:w-auto"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+
+          {/* Search + Filter */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            {/* Search Input */}
+            <div className="relative flex-1 sm:flex-none w-full sm:w-64">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600 shadow-sm"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+            </div>
+
+            {/* Category Dropdown */}
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-600 hidden sm:block" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="border-gray-300 rounded-lg py-2 px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-600 shadow-sm"
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
+        {/* Products */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {productsLoading ? (
             <p className="text-gray-600 col-span-full text-center text-sm sm:text-base">
@@ -180,7 +198,7 @@ export default function DashboardPage() {
                     <Button
                       className="mt-3 sm:mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs sm:text-sm py-1 sm:py-2"
                       onClick={(e) => {
-                        e.stopPropagation(); // <-- Prevents navigating to single product
+                        e.stopPropagation(); // Prevents navigating
                         handleAddToCart(product);
                       }}
                       disabled={cart?.some(
