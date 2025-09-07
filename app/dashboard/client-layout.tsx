@@ -85,23 +85,25 @@ export default function DashboardClientLayout({
             <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 className="sm:hidden"
-                onClick={() => {router.push("/dashboard")} /* Sidebar toggle logic */}
+                onClick={
+                  () => {
+                    router.push("/dashboard");
+                  } /* Sidebar toggle logic */
+                }
               >
                 <Menu className="h-6 w-6 text-gray-700" />
               </button>
               <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <ShoppingBag className="h-5 w-5 text-white" />
-              </div>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">
-                ShopHub
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <ShoppingBag className="h-5 w-5 text-white" />
+                </div>
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">
+                  ShopHub
                 </h1>
               </Link>
             </div>
-            
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-
               <div className="relative">
                 <Button
                   variant="outline"
@@ -162,28 +164,28 @@ export default function DashboardClientLayout({
               <h3 className="text-lg font-semibold text-gray-900">Links</h3>
               <ul className="mt-2 space-y-2">
                 <li>
-                  <a
-                    href="/about"
+                  <Link
+                    href="/dashboard/about"
                     className="text-sm text-gray-600 hover:text-purple-600"
                   >
                     About Us
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="/contact"
+                  <Link
+                    href="/dashboard/contact"
                     className="text-sm text-gray-600 hover:text-purple-600"
                   >
                     Contact
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="/terms"
+                  <Link
+                    href="/dashboard/terms"
                     className="text-sm text-gray-600 hover:text-purple-600"
                   >
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
