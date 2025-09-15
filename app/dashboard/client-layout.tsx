@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-
 // Define the AuthStore interface
 interface AuthStore {
   isAuthenticated: boolean;
@@ -34,7 +33,6 @@ export default function DashboardClientLayout({
   const cart = useCartStore((state) => state.cart); // <-- reactive cart
   const router = useRouter();
   const fetchCart = useCartStore((state) => state.fetchCart);
-
 
   useEffect(() => {
     if (!isLoading) {

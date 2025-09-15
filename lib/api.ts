@@ -346,6 +346,18 @@ class ApiClient {
       },
     });
   }
+
+  async getMyOrders(): Promise<any> {
+    const token = localStorage.getItem("auth-token");
+    if (!token) throw new Error("No authentication token found");
+
+    return this.request(`/order/myOrders`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

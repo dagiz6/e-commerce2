@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, ShoppingBag, LogOut, Package, TrendingUp, DollarSign, Users, Plus, BarChart3, X, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useOrders } from "@/hooks/use-orders";
+
 
 interface AuthStore {
   isAuthenticated: boolean;
@@ -31,6 +33,7 @@ export default function VendorPage() {
     stock: "",
     images: [] as File[],
   });
+  const { myOrdersQuery } = useOrders();
 
   useEffect(() => {
     if (!authLoading) {
@@ -95,6 +98,8 @@ export default function VendorPage() {
     setFormData({ name: "", price: "", description: "", category: "", stock: "", images: [] });
     setIsModalOpen(false);
   };
+  const ordersData = myOrdersQuery.data;
+  const recentOrders = ordersData?.orders.slice(-4).reverse() ?? [];
 
   if (authLoading || productLoading) {
     return (
@@ -161,25 +166,25 @@ export default function VendorPage() {
           {[
             {
               title: "Total Products",
-              value: "0",
+              value: "0", // TODO: hook up real product count
               icon: Package,
               color: "from-blue-500 to-blue-600",
             },
             {
               title: "Total Sales",
-              value: "0 ETB",
+              value: `${ordersData?.totalSales.toFixed(2) ?? 0} ETB`,
               icon: DollarSign,
               color: "from-green-500 to-green-600",
             },
             {
               title: "Orders",
-              value: "0",
+              value: ordersData?.totalOrders ?? 0,
               icon: TrendingUp,
               color: "from-purple-500 to-purple-600",
             },
             {
               title: "Customers",
-              value: "0",
+              value: ordersData?.customers ?? 0,
               icon: Users,
               color: "from-orange-500 to-orange-600",
             },
@@ -220,11 +225,20 @@ export default function VendorPage() {
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Product
               </Button>
+
               {[
-                { text: "Manage Inventory", icon: Package, path: "/vendor/manageProduct" },
-                { text: "View Analytics", icon: BarChart3 },
+                {
+                  text: "Manage Inventory",
+                  icon: Package,
+                  path: "/vendor/manageProduct",
+                },
+                {
+                  text: "Orders",
+                  icon: ShoppingBag, 
+                  path: "/vendor/orders",
+                },
                 { text: "Customer Support", icon: Users },
-              ].map(({ text, icon: Icon , path}) => (
+              ].map(({ text, icon: Icon, path }) => (
                 <Button
                   key={text}
                   variant="outline"
@@ -238,6 +252,7 @@ export default function VendorPage() {
             </CardContent>
           </Card>
 
+          {/* Recent Orders */}
           <Card className="lg:col-span-2 border-0 shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-gray-900">
@@ -249,32 +264,37 @@ export default function VendorPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[1, 2, 3, 4].map((order) => (
-                  <div
-                    key={order}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg flex items-center justify-center">
-                        <Package className="h-5 w-5 text-white" />
+                {recentOrders.length > 0 ? (
+                  recentOrders.map((o) => (
+                    <div
+                      key={o.orderId}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={o.imageUrl}
+                          alt={o.name}
+                          className="w-10 h-10 object-cover rounded-lg"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">{o.name}</p>
+                          <p className="text-sm text-gray-600">
+                            Qty: {o.quantity} • ETB {o.amount.toFixed(2)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          Order #{2000 + order}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Customer {order} • ETB {(order * 25.99).toFixed(2)}
-                        </p>
+                      <div className="text-right">
+                        <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                          Processing
+                        </span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                        Processing
-                      </span>
-                      <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center">
+                    No recent orders yet
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
