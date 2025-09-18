@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { User, ShoppingBag, LogOut, Package, TrendingUp, DollarSign, Users, Plus, BarChart3, X, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useOrders } from "@/hooks/use-orders";
+import Image from "next/image";
 
 
 interface AuthStore {
@@ -112,6 +113,19 @@ export default function VendorPage() {
 
   if (!isAuthenticated || !user || user.role !== "vendor") return null;
 
+  function timeAgo(dateString: string) {
+    const diff = Date.now() - new Date(dateString).getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (seconds < 60) return "Just now";
+    if (minutes < 60) return `${minutes} min ago`;
+    if (hours < 24) return `${hours} hr ago`;
+    return `${days} day${days > 1 ? "s" : ""} ago`;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-teal-100">
       {/* Header */}
@@ -162,11 +176,11 @@ export default function VendorPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[
             {
               title: "Total Products",
-              value: "0", // TODO: hook up real product count
+              value: `${ordersData?.totalProducts ?? 0}`,
               icon: Package,
               color: "from-blue-500 to-blue-600",
             },
@@ -182,26 +196,24 @@ export default function VendorPage() {
               icon: TrendingUp,
               color: "from-purple-500 to-purple-600",
             },
-            {
-              title: "Customers",
-              value: ordersData?.customers ?? 0,
-              icon: Users,
-              color: "from-orange-500 to-orange-600",
-            },
           ].map(({ title, value, icon: Icon, color }) => (
             <Card
               key={title}
               className="border-0 shadow-lg bg-white/95 backdrop-blur-sm transition-transform hover:scale-105"
             >
-              <CardContent className="p-6 flex items-center justify-between">
+              <CardContent className="p-8 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{value}</p>
+                  <p className="text-base md:text-lg font-medium text-gray-600">
+                    {title}
+                  </p>
+                  <p className="text-3xl md:text-4xl font-extrabold text-gray-900">
+                    {value}
+                  </p>
                 </div>
                 <div
-                  className={`w-12 h-12 bg-gradient-to-r ${color} rounded-lg flex items-center justify-center`}
+                  className={`w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r ${color} rounded-lg flex items-center justify-center`}
                 >
-                  <Icon className="h-6 w-6 text-white" />
+                  <Icon className="h-8 md:h-10 w-8 md:w-10 text-white" />
                 </div>
               </CardContent>
             </Card>
@@ -234,7 +246,7 @@ export default function VendorPage() {
                 },
                 {
                   text: "Orders",
-                  icon: ShoppingBag, 
+                  icon: ShoppingBag,
                   path: "/vendor/orders",
                 },
                 { text: "Customer Support", icon: Users },
@@ -265,31 +277,44 @@ export default function VendorPage() {
             <CardContent>
               <div className="space-y-4">
                 {recentOrders.length > 0 ? (
-                  recentOrders.map((o) => (
-                    <div
-                      key={o.orderId}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={o.imageUrl}
-                          alt={o.name}
-                          className="w-10 h-10 object-cover rounded-lg"
-                        />
-                        <div>
-                          <p className="font-medium text-gray-900">{o.name}</p>
-                          <p className="text-sm text-gray-600">
-                            Qty: {o.quantity} • ETB {o.amount.toFixed(2)}
+                  recentOrders
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    )
+                    .map((o, index) => (
+                      <div
+                        key={`${o.orderId}-${o.productId}-${o.createdAt}-${index}`}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Image
+                            src={o.imageUrl || "/placeholder.png"}
+                            alt={o.name}
+                            width={40}
+                            height={40}
+                            className="rounded-lg object-cover"
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {o.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Qty: {o.quantity} • ETB {o.amount.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right flex flex-col items-end space-y-1">
+                          <p className="text-xs text-gray-500">
+                            {timeAgo(o.createdAt)}
                           </p>
+                          <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                            Processing
+                          </span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                          Processing
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                    ))
                 ) : (
                   <p className="text-gray-500 text-center">
                     No recent orders yet

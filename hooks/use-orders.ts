@@ -25,11 +25,15 @@ export interface OrderItem {
   amount: number;
   product?: Product;
   customerId?: string;
+  createdAt?: string;
 }
 
 export interface Order {
   orderId: string;
   item: OrderItem;
+  createdAt?: string;
+  phoneNumber?: string; 
+  address?: string; 
 }
 
 export interface VendorOrdersResponse {
@@ -37,6 +41,7 @@ export interface VendorOrdersResponse {
   orders: Order[];
   totalSales: number;
   totalOrders: number;
+  totalProducts: number;
 }
 
 export interface MyOrdersResponse {
@@ -56,6 +61,9 @@ export interface OrderUI {
   price: number;
   amount: number;
   customerId?: string;
+  phone?: string;
+  address?: string;
+  totalProducts?: number;
 }
 
 export const useOrders = () => {
@@ -66,40 +74,59 @@ export const useOrders = () => {
       totalSales: number;
       totalOrders: number;
       customers: number;
+      totalProducts: number;
     }> => {
       const data: MyOrdersResponse = await apiClient.getMyOrders();
 
       if (!data?.result || data.result.length === 0) {
-        return { orders: [], totalSales: 0, totalOrders: 0, customers: 0 };
+        return { orders: [], totalSales: 0, totalOrders: 0, customers: 0 , totalProducts: 0};
       }
 
       const vendorOrders = data.result[0];
-      const orders: OrderUI[] = vendorOrders.orders.map((o) => ({
-        orderId: o.orderId,
-        createdAt: o.item?.product?.createdAt ?? new Date().toISOString(),
-        productId: o.item.productId,
-        name: o.item.product?.name ?? o.item.name,
-        description: o.item.product?.description ?? "",
-        imageUrl: o.item.product?.images?.[0]?.imageUrl ?? "",
-        quantity: o.item.quantity,
-        price: o.item.price,
-        amount: o.item.amount,
-        customerId: o.item.customerId,
-      }));
 
-      const totalSales = orders.reduce((sum, o) => sum + o.amount, 0);
+      const orders: OrderUI[] = vendorOrders.orders.map((o) => {
+        const createdAt =
+          o.createdAt ||
+          o.item.createdAt ||
+          o.item.product?.createdAt ||
+          new Date().toISOString();
+
+        return {
+          orderId: o.orderId,
+          createdAt,
+          productId: o.item.productId,
+          name: o.item.product?.name ?? o.item.name,
+          description: o.item.product?.description ?? "",
+          imageUrl: o.item.product?.images?.[0]?.imageUrl ?? "/placeholder.png",
+          quantity: o.item.quantity,
+          price: o.item.price,
+          amount: o.item.amount,
+          customerId: o.item.customerId,
+          phone: o.phoneNumber, 
+          address: o.address, 
+          
+        };
+      });
+
+      const sortedOrders = orders.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      const totalSales = sortedOrders.reduce((sum, o) => sum + o.amount, 0);
       const uniqueCustomers = new Set(
-        orders.map((o) => o.customerId).filter(Boolean)
+        sortedOrders.map((o) => o.customerId).filter(Boolean)
       ).size;
 
       return {
-        orders,
+        orders: sortedOrders,
         totalSales,
-        totalOrders: orders.length,
+        totalOrders: sortedOrders.length,
         customers: uniqueCustomers,
+        totalProducts: vendorOrders.totalProducts,
       };
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 min
+    staleTime: 1000 * 60 * 5,
   });
 
   return { myOrdersQuery };
