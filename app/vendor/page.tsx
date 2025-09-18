@@ -100,7 +100,15 @@ export default function VendorPage() {
     setIsModalOpen(false);
   };
   const ordersData = myOrdersQuery.data;
-  const recentOrders = ordersData?.orders.slice(-4).reverse() ?? [];
+  const recentOrders =
+    ordersData?.orders
+      .filter((o) => o.createdAt) // ensure valid dates
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ) // newest first
+      .slice(0, 4) ?? [];
+  
 
   if (authLoading || productLoading) {
     return (
